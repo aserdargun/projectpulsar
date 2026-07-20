@@ -801,6 +801,7 @@ const initial = landed(scenarios[1].cost);
   }
 
   .calculator-inputs {
+    min-width: 0;
     padding: 28px;
     border-right: 1px solid var(--line);
   }
@@ -830,6 +831,7 @@ const initial = landed(scenarios[1].cost);
 
   .calculator-inputs label {
     display: grid;
+    min-width: 0;
     gap: 7px;
     color: var(--text-muted);
     font-size: 0.68rem;
@@ -839,6 +841,8 @@ const initial = landed(scenarios[1].cost);
   .calculator-inputs input,
   .calculator-inputs select {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 44px;
     padding: 0 12px;
     border: 1px solid var(--line);
@@ -850,7 +854,7 @@ const initial = landed(scenarios[1].cost);
 
   .field-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
     margin-top: 16px;
   }
