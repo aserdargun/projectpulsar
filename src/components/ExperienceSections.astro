@@ -1,0 +1,1067 @@
+---
+import {
+  BadgeCheck,
+  BookOpenCheck,
+  Bot,
+  BrainCircuit,
+  ChartNoAxesCombined,
+  Check,
+  CircleGauge,
+  ClipboardCheck,
+  CodeXml,
+  DatabaseSearch,
+  FileSearch,
+  FlaskConical,
+  Gauge,
+  GitBranch,
+  Layers,
+  LockKeyhole,
+  MessageSquareText,
+  Network,
+  Radar,
+  Route,
+  Scale,
+  ScanSearch,
+  ShieldCheck,
+  Sparkles,
+  UserRoundCheck,
+  Workflow,
+  Wrench
+} from "@lucide/astro";
+import { paths, type Language, type PageKey } from "@/data/site";
+
+interface Props {
+  lang: Language;
+  pageKey: PageKey;
+}
+
+const { lang, pageKey } = Astro.props;
+const en = lang === "en";
+
+const common = en
+  ? {
+      system: "System view",
+      principles: "Operating principles",
+      evidence: "Evidence before scale",
+      learnMore: "Explore the architecture",
+      status: "Concept model · open for exploration"
+    }
+  : {
+      system: "Sistem görünümü",
+      principles: "Çalışma ilkeleri",
+      evidence: "Ölçekten önce kanıt",
+      learnMore: "Mimariyi keşfet",
+      status: "Kavram modeli · keşfe açık"
+    };
+
+const homeSteps = en
+  ? [
+      ["01", "Express intent", "A person, application or bounded agent states the task and expected outcome.", MessageSquareText],
+      ["02", "Establish authority", "Identity, purpose, data boundary and available actions are resolved.", LockKeyhole],
+      ["03", "Compose the route", "The runtime selects context, tools and the smallest capable model path.", Route],
+      ["04", "Execute with limits", "Permitted knowledge and tools are used inside observable boundaries.", BrainCircuit],
+      ["05", "Verify the outcome", "Grounding, uncertainty and policy checks determine whether to answer or escalate.", BadgeCheck]
+    ]
+  : [
+      ["01", "Niyeti ifade et", "İnsan, uygulama veya sınırlı ajan görevi ve beklenen sonucu tanımlar.", MessageSquareText],
+      ["02", "Yetkiyi belirle", "Kimlik, amaç, veri sınırı ve kullanılabilir eylemler çözümlenir.", LockKeyhole],
+      ["03", "Rotayı oluştur", "Çalışma katmanı bağlamı, araçları ve yeterli en küçük model yolunu seçer.", Route],
+      ["04", "Sınırlar içinde çalıştır", "İzinli bilgi ve araçlar gözlemlenebilir sınırlar içinde kullanılır.", BrainCircuit],
+      ["05", "Sonucu doğrula", "Dayanak, belirsizlik ve politika kontrolleri yanıt ya da yükseltme kararını verir.", BadgeCheck]
+    ];
+
+const homeCapabilities = en
+  ? [
+      ["Knowledge navigation", "Find, compare and explain governed knowledge with source authority intact.", FileSearch],
+      ["Operational insight", "Turn signals and events into structured, testable investigation paths.", ChartNoAxesCombined],
+      ["Engineering support", "Connect evidence across records while keeping critical judgment human.", Wrench],
+      ["Software & analytics", "Assist code and analysis through bounded tools, tests and review.", CodeXml],
+      ["Decision intelligence", "Build source-linked briefs that expose options, gaps and uncertainty.", Scale],
+      ["Bounded agency", "Coordinate approved steps without granting silent or unlimited action.", Bot]
+    ]
+  : [
+      ["Bilgiye erişim", "Yönetişimli bilgiyi kaynak yetkisini koruyarak bul, karşılaştır ve açıkla.", FileSearch],
+      ["Operasyonel içgörü", "Sinyal ve olayları yapılandırılmış, sınanabilir inceleme yollarına dönüştür.", ChartNoAxesCombined],
+      ["Mühendislik desteği", "Kritik yargıyı insanda tutarak kayıtlar arasındaki kanıtı ilişkilendir.", Wrench],
+      ["Yazılım ve analitik", "Kod ve analizi sınırlı araçlar, testler ve inceleme ile destekle.", CodeXml],
+      ["Karar zekâsı", "Seçenekleri, boşlukları ve belirsizliği gösteren kaynak bağlantılı özetler oluştur.", Scale],
+      ["Sınırlı ajanlar", "Sessiz veya sınırsız yetki vermeden onaylı adımları koordine et.", Bot]
+    ];
+
+const homePillars = en
+  ? [
+      ["Sovereign by design", "Information remains within an approved trust boundary.", ShieldCheck],
+      ["Adaptive by task", "Capability follows the work—not a permanent model assignment.", GitBranch],
+      ["Grounded by evidence", "Sources, checks and uncertainty travel with the outcome.", BookOpenCheck],
+      ["Accountable by default", "Human authority is explicit wherever consequence is high.", UserRoundCheck]
+    ]
+  : [
+      ["Tasarım gereği egemen", "Bilgi, onaylı güven sınırı içinde kalır.", ShieldCheck],
+      ["Göreve göre uyarlanan", "Yetenek kalıcı model atamasını değil, işi takip eder.", GitBranch],
+      ["Kanıtla temellenen", "Kaynaklar, kontroller ve belirsizlik sonuçla birlikte taşınır.", BookOpenCheck],
+      ["Varsayılan olarak hesap verebilir", "Etkisi yüksek yerde insan yetkisi açıktır.", UserRoundCheck]
+    ];
+
+const visionCards = en
+  ? [
+      ["Fragmented access", "Every application rebuilds identity, retrieval, policy and model integration.", Network],
+      ["Model coupling", "A model choice hardens into application logic and slows future change.", Layers],
+      ["Invisible authority", "Indexed knowledge can accidentally appear broader than source permissions.", LockKeyhole],
+      ["Unmeasured confidence", "Fluent output hides uncertainty when evidence and evaluation are absent.", ScanSearch]
+    ]
+  : [
+      ["Parçalı erişim", "Her uygulama kimlik, erişim, politika ve model entegrasyonunu yeniden kurar.", Network],
+      ["Modele bağımlılık", "Model seçimi uygulama mantığına yerleşir ve gelecekteki değişimi yavaşlatır.", Layers],
+      ["Görünmeyen yetki", "Dizinlenen bilgi kaynak izinlerinden daha geniş görünebilir.", LockKeyhole],
+      ["Ölçülmeyen güven", "Kanıt ve değerlendirme yoksa akıcı çıktı belirsizliği saklar.", ScanSearch]
+    ];
+
+const objectives = en
+  ? [
+      ["Unify access", "One coherent contract for applications that need intelligence."],
+      ["Preserve sovereignty", "Approved boundaries remain enforceable as capability changes."],
+      ["Adapt by task", "Route by risk, depth, latency and evidence needs."],
+      ["Ground with authority", "Keep source permissions and provenance attached to context."],
+      ["Bound agency", "Make tool scope, limits and approvals visible."],
+      ["Learn before scaling", "Let measured workload evidence shape architecture."]
+    ]
+  : [
+      ["Erişimi birleştir", "Zekâya ihtiyaç duyan uygulamalar için tek ve tutarlı sözleşme."],
+      ["Egemenliği koru", "Yetenek değişirken onaylı sınırlar uygulanabilir kalsın."],
+      ["Göreve göre uyarla", "Risk, derinlik, gecikme ve kanıt ihtiyacına göre yönlendir."],
+      ["Yetkiyle temellendir", "Kaynak izinlerini ve kaynak izini bağlamla birlikte taşı."],
+      ["Ajanı sınırla", "Araç kapsamını, limitleri ve onayları görünür kıl."],
+      ["Ölçekten önce öğren", "Mimariyi ölçülmüş iş yükü kanıtı şekillendirsin."]
+    ];
+
+const requestSteps = en
+  ? [
+      ["01", "Intent", "Task and expected outcome", MessageSquareText],
+      ["02", "Identity", "Who or what is asking", UserRoundCheck],
+      ["03", "Policy", "Purpose, scope and risk", ShieldCheck],
+      ["04", "Route", "Capability path selection", Route],
+      ["05", "Context", "Permitted knowledge and tools", DatabaseSearch],
+      ["06", "Runtime", "Fast, deep or escalated execution", BrainCircuit],
+      ["07", "Verification", "Evidence, uncertainty and review", BadgeCheck],
+      ["08", "Outcome", "Response, action and trace", ClipboardCheck]
+    ]
+  : [
+      ["01", "Niyet", "Görev ve beklenen sonuç", MessageSquareText],
+      ["02", "Kimlik", "Kim ya da ne talep ediyor", UserRoundCheck],
+      ["03", "Politika", "Amaç, kapsam ve risk", ShieldCheck],
+      ["04", "Rota", "Yetenek yolunun seçimi", Route],
+      ["05", "Bağlam", "İzinli bilgi ve araçlar", DatabaseSearch],
+      ["06", "Çalıştırma", "Hızlı, derin veya yükseltilmiş yürütme", BrainCircuit],
+      ["07", "Doğrulama", "Kanıt, belirsizlik ve inceleme", BadgeCheck],
+      ["08", "Sonuç", "Yanıt, eylem ve iz kaydı", ClipboardCheck]
+    ];
+
+const tiers = en
+  ? [
+      ["FAST", "Responsive default", "Routine classification, retrieval, extraction and short-form assistance.", "Low friction", Gauge],
+      ["MEDIUM", "Deeper working path", "Multi-step synthesis, richer context and domain-oriented reasoning.", "Measured depth", BrainCircuit],
+      ["FRONTIER", "Selective escalation", "Novel or demanding work that earns additional depth and review.", "Explicit gate", Sparkles]
+    ]
+  : [
+      ["FAST", "Hızlı varsayılan", "Rutin sınıflandırma, erişim, çıkarım ve kısa biçimli destek.", "Düşük sürtünme", Gauge],
+      ["MEDIUM", "Daha derin çalışma yolu", "Çok adımlı sentez, daha zengin bağlam ve alan odaklı akıl yürütme.", "Ölçülü derinlik", BrainCircuit],
+      ["FRONTIER", "Seçici yükseltme", "Ek derinliği ve incelemeyi hak eden yeni veya zorlu işler.", "Açık güven kapısı", Sparkles]
+    ];
+
+const useCases = homeCapabilities;
+
+const useCaseWaves = en
+  ? [
+      ["Wave 01", "Assist", "Search, explain, summarize and compare inside existing authority.", "Human reviews every meaningful output."],
+      ["Wave 02", "Investigate", "Combine governed context with deterministic analysis and evidence.", "Evaluation becomes repeatable."],
+      ["Wave 03", "Coordinate", "Let bounded agents prepare or execute approved multi-step work.", "Consequential actions remain gated."]
+    ]
+  : [
+      ["Dalga 01", "Destekle", "Mevcut yetki içinde ara, açıkla, özetle ve karşılaştır.", "Her anlamlı çıktı insan tarafından incelenir."],
+      ["Dalga 02", "İncele", "Yönetişimli bağlamı deterministik analiz ve kanıtla birleştir.", "Değerlendirme tekrarlanabilir olur."],
+      ["Dalga 03", "Koordine et", "Sınırlı ajanların onaylı çok adımlı işi hazırlamasına veya yürütmesine izin ver.", "Sonuç doğuran eylemler kapılı kalır."]
+    ];
+
+const trustCards = en
+  ? [
+      ["Identity before intelligence", "No context or capability is selected before the requesting identity is resolved.", UserRoundCheck],
+      ["Permission-aware retrieval", "Indexing never grants authority; source access rules are preserved.", DatabaseSearch],
+      ["Evidence travels forward", "Sources, checks, route and uncertainty remain attached to important outcomes.", BookOpenCheck],
+      ["Bounded execution", "Tools are allowlisted, time-limited, observable and gated before consequential change.", Bot],
+      ["Human authority", "Designated people can accept, challenge, reject or stop high-impact work.", Scale]
+    ]
+  : [
+      ["Zekâdan önce kimlik", "Talep eden kimlik çözülmeden bağlam veya yetenek seçilmez.", UserRoundCheck],
+      ["İzin farkındalıklı erişim", "Dizinleme yetki vermez; kaynak erişim kuralları korunur.", DatabaseSearch],
+      ["Kanıt ileri taşınır", "Kaynaklar, kontroller, rota ve belirsizlik önemli sonuçlara bağlı kalır.", BookOpenCheck],
+      ["Sınırlı yürütme", "Araçlar izin listeli, süre sınırlı, gözlemlenebilir ve sonuç doğuran değişimden önce kapılıdır.", Bot],
+      ["İnsan yetkisi", "Belirlenmiş kişiler etkisi yüksek işi kabul edebilir, sorgulayabilir, reddedebilir veya durdurabilir.", Scale]
+    ];
+
+const auditQuestions = en
+  ? [
+      "Who or what initiated the request?",
+      "Which policy and data boundary applied?",
+      "Which context, tools and capability path were used?",
+      "What evidence, uncertainty or escalation was recorded?",
+      "Who retained authority over the final consequence?"
+    ]
+  : [
+      "İsteği kim veya ne başlattı?",
+      "Hangi politika ve veri sınırı uygulandı?",
+      "Hangi bağlam, araçlar ve yetenek yolu kullanıldı?",
+      "Hangi kanıt, belirsizlik veya yükseltme kaydedildi?",
+      "Nihai sonuç üzerindeki yetki kimde kaldı?"
+    ];
+
+const roadmap = en
+  ? [
+      ["01", "EXPLORE", "Frame the right problem", "Choose bounded needs, accountable owners, permitted data and observable value.", "Exit: testable scope", Radar],
+      ["02", "VALIDATE", "Reduce uncertainty", "Test the smallest end-to-end path for quality, policy, stability and acceptance.", "Exit: repeatable evidence", FlaskConical],
+      ["03", "BUILD", "Establish the governed core", "Harden identity, routing, context, evaluation, audit and service ownership.", "Exit: operable foundation", Workflow],
+      ["04", "SCALE", "Grow what earns it", "Add use cases, integrations and capacity only where measured demand supports them.", "Exit: sustained value", CircleGauge]
+    ]
+  : [
+      ["01", "KEŞFET", "Doğru problemi çerçevele", "Sınırlı ihtiyaçları, sorumlu sahipleri, izinli veriyi ve gözlemlenebilir değeri seç.", "Çıkış: sınanabilir kapsam", Radar],
+      ["02", "DOĞRULA", "Belirsizliği azalt", "En küçük uçtan uca yolu kalite, politika, kararlılık ve kabul açısından sına.", "Çıkış: tekrarlanabilir kanıt", FlaskConical],
+      ["03", "KUR", "Yönetişimli çekirdeği oluştur", "Kimlik, yönlendirme, bağlam, değerlendirme, denetim ve hizmet sahipliğini sağlamlaştır.", "Çıkış: işletilebilir temel", Workflow],
+      ["04", "ÖLÇEKLE", "Hak edeni büyüt", "Kullanım alanlarını, entegrasyonları ve kapasiteyi yalnızca ölçülen talep desteklediğinde ekle.", "Çıkış: sürdürülebilir değer", CircleGauge]
+    ];
+---
+
+{
+  pageKey === "home" && (
+    <>
+      <section class="experience-section container" aria-labelledby="how-title">
+        <div class="section-head">
+          <div>
+            <p class="section-index">01 / {common.system}</p>
+            <h2 id="how-title">{en ? "How trusted intelligence moves" : "Güvenilir zekâ nasıl ilerler"}</h2>
+          </div>
+          <p>{en ? "Every request passes through one visible operating model." : "Her istek, görünür tek bir çalışma modelinden geçer."}</p>
+        </div>
+        <div class="process-line">
+          {homeSteps.map(([number, title, description, Icon]) => (
+            <article class="process-step">
+              <span class="step-number">{number}</span>
+              <Icon size={22} stroke-width={1.6} aria-hidden="true" />
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="experience-section experience-section--tint">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="section-index">02 / {en ? "Capability map" : "Yetenek haritası"}</p>
+              <h2>{en ? "Useful work, connected by one runtime" : "Tek çalışma katmanıyla bağlanan faydalı işler"}</h2>
+            </div>
+            <p>{en ? "Different tasks keep their own quality and risk policy while reusing common controls." : "Farklı görevler, ortak kontrolleri yeniden kullanırken kendi kalite ve risk politikasını korur."}</p>
+          </div>
+          <div class="capability-grid">
+            {homeCapabilities.map(([title, description, Icon], index) => (
+              <article class="capability-card">
+                <span class="card-code">P-{String(index + 1).padStart(2, "0")}</span>
+                <Icon size={27} stroke-width={1.5} aria-hidden="true" />
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="experience-section container">
+        <div class="section-head">
+          <div>
+            <p class="section-index">03 / {common.principles}</p>
+            <h2>{en ? "The boundaries that do not move" : "Değişmeyen sınırlar"}</h2>
+          </div>
+          <a class="text-link" href={paths.trust[lang]}>{en ? "Explore trust" : "Güven yaklaşımını keşfet"} <span>→</span></a>
+        </div>
+        <div class="pillar-grid">
+          {homePillars.map(([title, description, Icon]) => (
+            <article class="pillar-card">
+              <Icon size={24} stroke-width={1.6} aria-hidden="true" />
+              <div><h3>{title}</h3><p>{description}</p></div>
+            </article>
+          ))}
+        </div>
+        <div class="vision-band">
+          <div>
+            <span>{en ? "VISION" : "VİZYON"}</span>
+            <strong>{en ? "Intelligence can evolve. Trust remains designed." : "Zekâ gelişebilir. Güven tasarlanmış kalır."}</strong>
+          </div>
+          <a class="button button--primary" href={paths.roadmap[lang]}>{en ? "See the path" : "Yol haritasını gör"} <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+    </>
+  )
+}
+
+{
+  pageKey === "vision" && (
+    <>
+      <section class="experience-section container">
+        <div class="section-head"><div><p class="section-index">01 / {en ? "The challenge" : "Zorluk"}</p><h2>{en ? "Model access is not an operating model" : "Model erişimi bir çalışma modeli değildir"}</h2></div><p>{en ? "The hardest problems emerge around the model: authority, context, quality and change." : "En zor problemler modelin çevresinde oluşur: yetki, bağlam, kalite ve değişim."}</p></div>
+        <div class="capability-grid capability-grid--four">
+          {visionCards.map(([title, description, Icon]) => <article class="capability-card"><Icon size={27} stroke-width={1.5} aria-hidden="true" /><h3>{title}</h3><p>{description}</p></article>)}
+        </div>
+      </section>
+      <section class="experience-section experience-section--tint">
+        <div class="container">
+          <div class="section-head"><div><p class="section-index">02 / {en ? "North star" : "Kuzey yıldızı"}</p><h2>{en ? "A stable boundary around changing intelligence" : "Değişen zekânın çevresinde kalıcı bir sınır"}</h2></div><p>{en ? "PULSAR separates durable responsibilities from replaceable capabilities." : "PULSAR kalıcı sorumlulukları değiştirilebilir yeteneklerden ayırır."}</p></div>
+          <div class="objective-board">
+            {objectives.map(([title, description], index) => <article><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{title}</h3><p>{description}</p></div></article>)}
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+{
+  pageKey === "platform" && (
+    <>
+      <section class="experience-section container">
+        <div class="section-head"><div><p class="section-index">01 / {en ? "Request lifecycle" : "İstek yaşam döngüsü"}</p><h2>{en ? "From intent to accountable outcome" : "Niyetten hesap verebilir sonuca"}</h2></div><p>{en ? "Eight observable stages make routing, authority and evidence explicit." : "Sekiz gözlemlenebilir aşama; yönlendirmeyi, yetkiyi ve kanıtı açık hale getirir."}</p></div>
+        <div class="lifecycle-grid">
+          {requestSteps.map(([number, title, description, Icon]) => <article><span class="step-number">{number}</span><Icon size={22} stroke-width={1.6} aria-hidden="true" /><h3>{title}</h3><p>{description}</p></article>)}
+        </div>
+      </section>
+      <section class="experience-section experience-section--tint">
+        <div class="container">
+          <div class="section-head"><div><p class="section-index">02 / {en ? "Adaptive model paths" : "Uyarlanan model yolları"}</p><h2>{en ? "Use the smallest capable path first" : "Önce yeterli en küçük yolu kullan"}</h2></div><p>{en ? "The tiers describe operating intent—not fixed model sizes or permanent assignments." : "Katmanlar sabit model boyutlarını değil, çalışma niyetini tanımlar."}</p></div>
+          <div class="tier-board">
+            {tiers.map(([name, title, description, tag, Icon], index) => <article class:list={["tier-card", `tier-card--${index + 1}`]}><div class="tier-top"><span>{name}</span><Icon size={26} stroke-width={1.5} aria-hidden="true" /></div><h3>{title}</h3><p>{description}</p><small>{tag}</small></article>)}
+          </div>
+          <div class="escalation-line"><span>{en ? "Routine" : "Rutin"}</span><div><i></i><i></i><i></i></div><span>{en ? "Escalate when evidence requires" : "Kanıt gerektirdiğinde yükselt"}</span></div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+{
+  pageKey === "use-cases" && (
+    <>
+      <section class="experience-section container">
+        <div class="section-head"><div><p class="section-index">01 / {en ? "Opportunity map" : "Fırsat haritası"}</p><h2>{en ? "Six paths to measurable value" : "Ölçülebilir değere giden altı yol"}</h2></div><p>{en ? "Start where ownership, data permission, baseline and safe rejection can be made clear." : "Sahipliğin, veri izninin, başlangıç ölçümünün ve güvenli reddin açık olduğu yerden başla."}</p></div>
+        <div class="capability-grid">
+          {useCases.map(([title, description, Icon], index) => <article class="capability-card"><span class="card-code">U-{String(index + 1).padStart(2, "0")}</span><Icon size={27} stroke-width={1.5} aria-hidden="true" /><h3>{title}</h3><p>{description}</p></article>)}
+        </div>
+      </section>
+      <section class="experience-section experience-section--tint">
+        <div class="container">
+          <div class="section-head"><div><p class="section-index">02 / {en ? "Adoption waves" : "Benimseme dalgaları"}</p><h2>{en ? "Capability grows with control" : "Yetenek, kontrolle birlikte büyür"}</h2></div><p>{en ? "Each wave earns a wider operating envelope through evidence." : "Her dalga, kanıt yoluyla daha geniş bir çalışma alanı kazanır."}</p></div>
+          <div class="wave-board">
+            {useCaseWaves.map(([wave, title, description, gate]) => <article><span>{wave}</span><h3>{title}</h3><p>{description}</p><small><ShieldCheck size={15} aria-hidden="true" />{gate}</small></article>)}
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+{
+  pageKey === "trust" && (
+    <>
+      <section class="experience-section container">
+        <div class="section-head"><div><p class="section-index">01 / {en ? "Trust chain" : "Güven zinciri"}</p><h2>{en ? "Five controls that travel with every request" : "Her istekle ilerleyen beş kontrol"}</h2></div><p>{en ? "Trust becomes real when it changes runtime behavior." : "Güven, çalışma zamanı davranışını değiştirdiğinde gerçeğe dönüşür."}</p></div>
+        <div class="trust-stack">
+          {trustCards.map(([title, description, Icon], index) => <article><span>{String(index + 1).padStart(2, "0")}</span><Icon size={24} stroke-width={1.5} aria-hidden="true" /><div><h3>{title}</h3><p>{description}</p></div></article>)}
+        </div>
+      </section>
+      <section class="experience-section experience-section--tint">
+        <div class="container audit-board">
+          <div><p class="section-index">02 / {en ? "Observable decisions" : "Gözlemlenebilir kararlar"}</p><h2>{en ? "The runtime must be able to answer" : "Çalışma katmanı yanıtlayabilmeli"}</h2><p>{en ? "A fluent response is not enough. Important outcomes need an inspectable path." : "Akıcı bir yanıt yeterli değildir. Önemli sonuçların incelenebilir bir yola ihtiyacı vardır."}</p></div>
+          <ol>{auditQuestions.map((question) => <li><Check size={18} aria-hidden="true" /><span>{question}</span></li>)}</ol>
+        </div>
+      </section>
+    </>
+  )
+}
+
+{
+  pageKey === "roadmap" && (
+    <>
+      <section class="experience-section container">
+        <div class="section-head"><div><p class="section-index">01 / {en ? "Delivery path" : "Teslimat yolu"}</p><h2>{en ? "Four stages. Evidence at every gate." : "Dört aşama. Her kapıda kanıt."}</h2></div><p>{en ? "The roadmap reduces uncertainty before it increases commitment." : "Yol haritası taahhüdü artırmadan önce belirsizliği azaltır."}</p></div>
+        <div class="roadmap-board">
+          {roadmap.map(([number, phase, title, description, gate, Icon]) => <article><div class="roadmap-top"><span>{number}</span><Icon size={25} stroke-width={1.5} aria-hidden="true" /></div><small>{phase}</small><h3>{title}</h3><p>{description}</p><strong>{gate}</strong></article>)}
+        </div>
+      </section>
+      <section class="experience-section experience-section--tint">
+        <div class="container decision-band">
+          <div><p class="section-index">02 / {common.evidence}</p><h2>{en ? "Advance · adjust · or stop" : "İlerle · uyarla · veya dur"}</h2></div>
+          <p>{en ? "Stopping an unsupported path is a successful decision when it prevents complexity without proven value." : "Desteklenmeyen bir yolu durdurmak, kanıtlanmamış değer için karmaşıklığı önlediğinde başarılı bir karardır."}</p>
+        </div>
+      </section>
+    </>
+  )
+}
+
+<style>
+  .experience-section {
+    padding-block: clamp(72px, 9vw, 118px);
+  }
+
+  .experience-section--tint {
+    border-block: 1px solid var(--line);
+    background:
+      linear-gradient(90deg, transparent, color-mix(in srgb, var(--cyan) 5%, transparent), transparent),
+      color-mix(in srgb, var(--surface-muted) 54%, transparent);
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+    align-items: end;
+    gap: 50px;
+    margin-bottom: 38px;
+  }
+
+  .section-index,
+  .card-code {
+    margin: 0 0 13px;
+    color: var(--cyan);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .section-head h2,
+  .audit-board h2,
+  .decision-band h2 {
+    max-width: 810px;
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(2rem, 4vw, 3.8rem);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .section-head > p,
+  .audit-board > div > p:last-child,
+  .decision-band > p {
+    max-width: 520px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .text-link {
+    display: inline-flex;
+    align-items: center;
+    justify-self: end;
+    gap: 12px;
+    color: var(--cyan);
+    font-size: 0.84rem;
+    font-weight: 760;
+    text-decoration: none;
+  }
+
+  .process-line {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+  }
+
+  .process-step {
+    position: relative;
+    min-height: 260px;
+    padding: 23px 20px;
+    border-right: 1px solid var(--line);
+  }
+
+  .process-step:last-child {
+    border-right: 0;
+  }
+
+  .process-step::after {
+    position: absolute;
+    top: 61px;
+    right: -5px;
+    z-index: 2;
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    background: var(--bg);
+    content: "";
+  }
+
+  .process-step:last-child::after {
+    display: none;
+  }
+
+  .step-number {
+    display: block;
+    margin-bottom: 28px;
+    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+  }
+
+  .process-step svg,
+  .capability-card svg,
+  .pillar-card svg,
+  .lifecycle-grid svg,
+  .trust-stack svg {
+    color: var(--cyan);
+  }
+
+  .process-step h3,
+  .capability-card h3,
+  .pillar-card h3,
+  .objective-board h3,
+  .lifecycle-grid h3,
+  .tier-card h3,
+  .wave-board h3,
+  .trust-stack h3,
+  .roadmap-board h3 {
+    margin: 18px 0 8px;
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .process-step p,
+  .capability-card p,
+  .pillar-card p,
+  .objective-board p,
+  .lifecycle-grid p,
+  .tier-card p,
+  .wave-board p,
+  .trust-stack p,
+  .roadmap-board p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.79rem;
+    line-height: 1.55;
+  }
+
+  .capability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+
+  .capability-grid--four {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .capability-card {
+    position: relative;
+    min-height: 240px;
+    padding: 24px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
+    transition:
+      background 160ms ease,
+      transform 160ms ease;
+  }
+
+  .capability-card:hover {
+    z-index: 1;
+    background: var(--surface);
+    transform: translateY(-3px);
+  }
+
+  .capability-card .card-code {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    color: var(--text-muted);
+  }
+
+  .capability-card h3 {
+    margin-top: 34px;
+    font-size: 1.12rem;
+  }
+
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .pillar-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    min-height: 130px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+  }
+
+  .pillar-card h3 {
+    margin-top: 0;
+  }
+
+  .vision-band,
+  .decision-band {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 28px;
+    padding: 30px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 35%, var(--line));
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 20% 50%, var(--glow), transparent 42%),
+      var(--surface);
+  }
+
+  .vision-band span {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--cyan);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+  }
+
+  .vision-band strong {
+    display: block;
+    color: var(--text);
+    font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+    letter-spacing: -0.025em;
+  }
+
+  .objective-board {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--line);
+  }
+
+  .objective-board article {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 18px;
+    padding: 25px 20px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .objective-board article:nth-child(even) {
+    border-right: 0;
+  }
+
+  .objective-board article > span {
+    color: var(--cyan);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+  }
+
+  .objective-board h3 {
+    margin-top: 0;
+  }
+
+  .lifecycle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+
+  .lifecycle-grid article {
+    min-height: 205px;
+    padding: 21px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-elevated);
+  }
+
+  .lifecycle-grid .step-number {
+    margin-bottom: 22px;
+  }
+
+  .lifecycle-grid h3 {
+    margin-top: 18px;
+  }
+
+  .tier-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .tier-card {
+    min-height: 285px;
+    padding: 25px;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--cyan);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+  }
+
+  .tier-card--2 {
+    border-top-color: var(--violet);
+  }
+
+  .tier-card--3 {
+    border-top-color: var(--amber);
+  }
+
+  .tier-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--cyan);
+  }
+
+  .tier-card--2 .tier-top {
+    color: var(--violet);
+  }
+
+  .tier-card--3 .tier-top {
+    color: var(--amber);
+  }
+
+  .tier-top span {
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.17em;
+  }
+
+  .tier-card h3 {
+    margin-top: 54px;
+    font-size: 1.25rem;
+  }
+
+  .tier-card small {
+    display: inline-block;
+    margin-top: 26px;
+    padding: 6px 9px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+  }
+
+  .escalation-line {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+    color: var(--text-muted);
+    font-size: 0.67rem;
+    font-weight: 720;
+    text-transform: uppercase;
+  }
+
+  .escalation-line div {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet), var(--amber));
+  }
+
+  .escalation-line i {
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  .wave-board,
+  .roadmap-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .wave-board article,
+  .roadmap-board article {
+    min-height: 275px;
+    padding: 25px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+  }
+
+  .wave-board > article > span,
+  .roadmap-board > article > small {
+    color: var(--cyan);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .wave-board h3 {
+    margin-top: 42px;
+    font-size: 1.45rem;
+  }
+
+  .wave-board small {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    font-size: 0.68rem;
+    line-height: 1.45;
+  }
+
+  .wave-board small svg {
+    flex: none;
+    color: var(--amber);
+  }
+
+  .trust-stack {
+    display: grid;
+    gap: 8px;
+  }
+
+  .trust-stack article {
+    display: grid;
+    grid-template-columns: 52px 34px 1fr;
+    align-items: center;
+    gap: 15px;
+    padding: 18px 22px;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--cyan);
+    border-radius: 6px;
+    background: var(--bg-elevated);
+  }
+
+  .trust-stack article:nth-child(even) {
+    border-left-color: var(--amber);
+  }
+
+  .trust-stack article > span {
+    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+  }
+
+  .trust-stack h3 {
+    margin-top: 0;
+  }
+
+  .audit-board {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(40px, 8vw, 100px);
+    align-items: center;
+  }
+
+  .audit-board > div > p:last-child {
+    margin-top: 22px;
+  }
+
+  .audit-board ol {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .audit-board li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 56px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-size: 0.84rem;
+  }
+
+  .audit-board li svg {
+    flex: none;
+    color: var(--amber);
+  }
+
+  .roadmap-board {
+    grid-template-columns: repeat(4, 1fr);
+    position: relative;
+  }
+
+  .roadmap-board::before {
+    position: absolute;
+    z-index: -1;
+    top: 49px;
+    right: 5%;
+    left: 5%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet), var(--amber));
+    content: "";
+  }
+
+  .roadmap-board article {
+    min-height: 330px;
+  }
+
+  .roadmap-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 34px;
+    color: var(--cyan);
+  }
+
+  .roadmap-top span {
+    display: grid;
+    width: 43px;
+    height: 43px;
+    place-items: center;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    background: var(--surface);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+  }
+
+  .roadmap-board h3 {
+    font-size: 1.18rem;
+  }
+
+  .roadmap-board strong {
+    display: block;
+    margin-top: 28px;
+    padding-top: 15px;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    font-size: 0.68rem;
+  }
+
+  .decision-band {
+    margin-top: 0;
+  }
+
+  .decision-band > div {
+    flex: 1;
+  }
+
+  .decision-band > p {
+    flex: 0 1 480px;
+  }
+
+  @media (max-width: 980px) {
+    .process-line,
+    .lifecycle-grid,
+    .roadmap-board {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .process-step {
+      min-height: 225px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .process-step:nth-child(even) {
+      border-right: 0;
+    }
+
+    .process-step::after,
+    .roadmap-board::before {
+      display: none;
+    }
+
+    .process-step:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .capability-grid--four {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .roadmap-board article {
+      min-height: 280px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .section-head,
+    .audit-board {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .section-head {
+      margin-bottom: 28px;
+    }
+
+    .text-link {
+      justify-self: start;
+    }
+
+    .capability-grid,
+    .tier-board,
+    .wave-board {
+      grid-template-columns: 1fr;
+    }
+
+    .capability-card {
+      min-height: 205px;
+    }
+
+    .pillar-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .vision-band,
+    .decision-band {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .experience-section {
+      padding-block: 64px;
+    }
+
+    .process-line,
+    .capability-grid--four,
+    .objective-board,
+    .lifecycle-grid,
+    .roadmap-board {
+      grid-template-columns: 1fr;
+    }
+
+    .process-step:last-child {
+      grid-column: auto;
+    }
+
+    .objective-board article,
+    .objective-board article:nth-child(even) {
+      border-right: 1px solid var(--line);
+    }
+
+    .trust-stack article {
+      grid-template-columns: 34px 1fr;
+    }
+
+    .trust-stack article > div {
+      grid-column: 1 / -1;
+      padding-left: 49px;
+    }
+  }
+</style>

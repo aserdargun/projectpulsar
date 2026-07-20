@@ -1,0 +1,440 @@
+---
+import {
+  ArrowRight,
+  BadgeCheck,
+  BrainCircuit,
+  DatabaseSearch,
+  LockKeyhole,
+  MessageSquareText,
+  Route,
+  ShieldCheck
+} from "@lucide/astro";
+import type { Language } from "@/data/site";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const copy =
+  lang === "en"
+    ? {
+        label: "Conceptual request map",
+        title: "One request. A governed path.",
+        input: "Intent",
+        inputNote: "Person, application or bounded agent",
+        trust: "Trust gate",
+        trustNote: "Identity · authority · purpose",
+        route: "Adaptive route",
+        routeNote: "Risk · quality · latency",
+        context: "Permitted context",
+        contextNote: "Knowledge · tools · provenance",
+        core: "PULSAR",
+        coreNote: "Unified AI runtime",
+        verify: "Evidence gate",
+        verifyNote: "Grounding · uncertainty · review",
+        output: "Accountable outcome",
+        outputNote: "Answer · action · audit trail",
+        online: "Policy online",
+        trace: "Trace active"
+      }
+    : {
+        label: "Kavramsal istek haritası",
+        title: "Tek istek. Yönetişimli bir yol.",
+        input: "Niyet",
+        inputNote: "İnsan, uygulama veya sınırlı ajan",
+        trust: "Güven kapısı",
+        trustNote: "Kimlik · yetki · amaç",
+        route: "Uyarlanan rota",
+        routeNote: "Risk · kalite · gecikme",
+        context: "İzinli bağlam",
+        contextNote: "Bilgi · araçlar · kaynak izi",
+        core: "PULSAR",
+        coreNote: "Birleşik AI çalışma katmanı",
+        verify: "Kanıt kapısı",
+        verifyNote: "Dayanak · belirsizlik · inceleme",
+        output: "Hesap verebilir sonuç",
+        outputNote: "Yanıt · eylem · denetim izi",
+        online: "Politika etkin",
+        trace: "İz kaydı açık"
+      };
+---
+
+<div
+  class="command-map surface"
+  role="img"
+  aria-label={`${copy.title} ${copy.input}, ${copy.trust}, ${copy.route}, ${copy.context}, ${copy.verify}, ${copy.output}.`}
+>
+  <div class="map-head">
+    <span class="map-kicker"><span></span>{copy.label}</span>
+    <div class="map-status" aria-hidden="true">
+      <span><i></i>{copy.online}</span>
+      <span><i></i>{copy.trace}</span>
+    </div>
+  </div>
+
+  <strong class="map-title">{copy.title}</strong>
+
+  <div class="map-flow">
+    <div class="map-node map-node--input">
+      <MessageSquareText size={18} stroke-width={1.8} aria-hidden="true" />
+      <span><strong>{copy.input}</strong><small>{copy.inputNote}</small></span>
+    </div>
+    <ArrowRight class="flow-arrow" size={18} aria-hidden="true" />
+    <div class="map-node map-node--gate">
+      <LockKeyhole size={18} stroke-width={1.8} aria-hidden="true" />
+      <span><strong>{copy.trust}</strong><small>{copy.trustNote}</small></span>
+    </div>
+    <ArrowRight class="flow-arrow" size={18} aria-hidden="true" />
+    <div class="map-node">
+      <Route size={18} stroke-width={1.8} aria-hidden="true" />
+      <span><strong>{copy.route}</strong><small>{copy.routeNote}</small></span>
+    </div>
+  </div>
+
+  <div class="map-core-row">
+    <div class="context-node">
+      <DatabaseSearch size={20} stroke-width={1.7} aria-hidden="true" />
+      <span><strong>{copy.context}</strong><small>{copy.contextNote}</small></span>
+    </div>
+
+    <div class="core-shell" aria-hidden="true">
+      <div class="core-radar"></div>
+      <div class="core">
+        <BrainCircuit size={26} stroke-width={1.6} />
+        <strong>{copy.core}</strong>
+        <small>{copy.coreNote}</small>
+      </div>
+    </div>
+
+    <div class="context-node context-node--right">
+      <ShieldCheck size={20} stroke-width={1.7} aria-hidden="true" />
+      <span><strong>{copy.verify}</strong><small>{copy.verifyNote}</small></span>
+    </div>
+  </div>
+
+  <div class="map-output">
+    <span class="output-line" aria-hidden="true"></span>
+    <div class="map-node map-node--output">
+      <BadgeCheck size={20} stroke-width={1.8} aria-hidden="true" />
+      <span><strong>{copy.output}</strong><small>{copy.outputNote}</small></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .command-map {
+    position: relative;
+    min-height: 560px;
+    padding: 22px;
+    overflow: hidden;
+    border-radius: 10px;
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--cyan) 6%, transparent), transparent 42%),
+      var(--bg-elevated);
+    isolation: isolate;
+  }
+
+  .command-map::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--cyan) 8%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--cyan) 8%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+    content: "";
+    mask-image: radial-gradient(circle at center, black, transparent 82%);
+  }
+
+  .map-head,
+  .map-status,
+  .map-flow,
+  .map-core-row,
+  .map-output,
+  .map-node,
+  .context-node {
+    display: flex;
+    align-items: center;
+  }
+
+  .map-head {
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .map-kicker,
+  .map-status {
+    color: var(--text-muted);
+    font-size: 0.61rem;
+    font-weight: 760;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .map-kicker,
+  .map-status span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .map-kicker > span,
+  .map-status i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  .map-status {
+    gap: 14px;
+  }
+
+  .map-status span:last-child i {
+    background: var(--amber);
+    box-shadow: 0 0 10px var(--amber);
+  }
+
+  .map-title {
+    display: block;
+    max-width: 450px;
+    margin: 20px 0 26px;
+    color: var(--text);
+    font-size: clamp(1.5rem, 3vw, 2.3rem);
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+  }
+
+  .map-flow {
+    position: relative;
+    z-index: 3;
+    justify-content: center;
+    gap: 9px;
+  }
+
+  .map-node,
+  .context-node {
+    gap: 10px;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
+    color: var(--cyan);
+  }
+
+  .map-node {
+    flex: 1;
+  }
+
+  .map-node--gate {
+    border-color: color-mix(in srgb, var(--amber) 60%, transparent);
+    color: var(--amber);
+  }
+
+  .map-node span,
+  .context-node span {
+    display: grid;
+    min-width: 0;
+  }
+
+  .map-node strong,
+  .context-node strong {
+    color: var(--text);
+    font-size: 0.72rem;
+    line-height: 1.1;
+  }
+
+  .map-node small,
+  .context-node small {
+    margin-top: 4px;
+    overflow: hidden;
+    color: var(--text-muted);
+    font-size: 0.56rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+  }
+
+  .flow-arrow {
+    flex: none;
+    color: var(--cyan);
+  }
+
+  .map-core-row {
+    position: relative;
+    justify-content: space-between;
+    min-height: 290px;
+    gap: 20px;
+  }
+
+  .map-core-row::before,
+  .map-core-row::after {
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    width: 46%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan));
+    content: "";
+    opacity: 0.65;
+  }
+
+  .map-core-row::before {
+    left: 5%;
+  }
+
+  .map-core-row::after {
+    right: 5%;
+    transform: rotate(180deg);
+  }
+
+  .context-node {
+    width: 31%;
+    align-self: flex-end;
+    margin-bottom: 27px;
+  }
+
+  .context-node--right {
+    align-self: flex-start;
+    margin-top: 27px;
+    margin-bottom: 0;
+    color: var(--amber);
+  }
+
+  .core-shell {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 190px;
+    height: 190px;
+    transform: translate(-50%, -50%);
+  }
+
+  .core-radar {
+    position: absolute;
+    inset: -18px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 28%, transparent);
+    border-radius: 50%;
+  }
+
+  .core-radar::before,
+  .core-radar::after {
+    position: absolute;
+    inset: 19px;
+    border: 1px solid color-mix(in srgb, var(--cyan) 20%, transparent);
+    border-radius: 50%;
+    content: "";
+  }
+
+  .core-radar::after {
+    inset: -1px 50%;
+    width: 1px;
+    border: 0;
+    border-left: 1px solid color-mix(in srgb, var(--cyan) 22%, transparent);
+    border-radius: 0;
+  }
+
+  .core {
+    position: absolute;
+    z-index: 2;
+    inset: 20px;
+    display: grid;
+    place-content: center;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--cyan);
+    text-align: center;
+    box-shadow:
+      0 0 0 12px color-mix(in srgb, var(--cyan) 6%, transparent),
+      0 0 42px var(--glow);
+  }
+
+  .core svg {
+    margin: 0 auto 5px;
+  }
+
+  .core strong {
+    color: var(--text);
+    font-size: 1rem;
+    letter-spacing: 0.16em;
+  }
+
+  .core small {
+    max-width: 110px;
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 0.57rem;
+    line-height: 1.2;
+  }
+
+  .map-output {
+    position: relative;
+    justify-content: center;
+  }
+
+  .output-line {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 1px;
+    height: 42px;
+    background: linear-gradient(transparent, var(--amber));
+  }
+
+  .map-node--output {
+    flex: none;
+    width: min(100%, 300px);
+    border-color: color-mix(in srgb, var(--amber) 55%, transparent);
+    color: var(--amber);
+  }
+
+  @media (max-width: 640px) {
+    .command-map {
+      min-height: 620px;
+      padding: 18px;
+    }
+
+    .map-status {
+      display: none;
+    }
+
+    .map-title {
+      margin-bottom: 20px;
+    }
+
+    .map-flow {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .flow-arrow {
+      align-self: center;
+      transform: rotate(90deg);
+    }
+
+    .map-core-row {
+      min-height: 245px;
+    }
+
+    .context-node {
+      width: 38%;
+      padding: 9px;
+    }
+
+    .context-node small {
+      display: none;
+    }
+
+    .core-shell {
+      width: 150px;
+      height: 150px;
+    }
+
+    .core {
+      inset: 15px;
+    }
+  }
+</style>

@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",
+    "@lucide/astro": "1.25.0",
     "astro": "7.1.1"
   },
   "devDependencies": {

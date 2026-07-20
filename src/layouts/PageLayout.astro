@@ -1,9 +1,8 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import CommandMap from "@/components/CommandMap.astro";
+import ExperienceSections from "@/components/ExperienceSections.astro";
 import PageVisual from "@/components/PageVisual.astro";
-import PlatformFlow from "@/components/PlatformFlow.astro";
-import PulsarHeroVisual from "@/components/PulsarHeroVisual.astro";
-import TierDiagram from "@/components/TierDiagram.astro";
 import { labels, paths, type Language, type PageKey } from "@/data/site";
 
 interface Frontmatter {
@@ -59,79 +58,72 @@ const copy = labels[lang];
           }
         </div>
         <div class="hero-visual">
-          {home ? (
-            <PulsarHeroVisual {lang} />
-          ) : pageKey === "platform" ? (
-            <div class="platform-constellation surface" aria-hidden="true">
-              <span class="constellation-core">PULSAR</span>
-              <span class="constellation-node constellation-node--one">
-                {lang === "en" ? "Policy" : "Politika"}
-              </span>
-              <span class="constellation-node constellation-node--two">
-                {lang === "en" ? "Models" : "Modeller"}
-              </span>
-              <span class="constellation-node constellation-node--three">
-                {lang === "en" ? "Context" : "Bağlam"}
-              </span>
-              <span class="constellation-node constellation-node--four">
-                {lang === "en" ? "Evidence" : "Kanıt"}
-              </span>
-            </div>
-          ) : (
-            <PageVisual {lang} {pageKey} />
-          )}
+          {home || pageKey === "platform" ? <CommandMap {lang} /> : <PageVisual {lang} {pageKey} />}
         </div>
+      </div>
+      <div class="container hero-rail" aria-label={lang === "en" ? "PULSAR design principles" : "PULSAR tasarım ilkeleri"}>
+        <span><i></i>{lang === "en" ? "Sovereign boundary" : "Egemen sınır"}</span>
+        <span><i></i>{lang === "en" ? "Adaptive routing" : "Uyarlanan yönlendirme"}</span>
+        <span><i></i>{lang === "en" ? "Permission-aware context" : "İzin farkındalıklı bağlam"}</span>
+        <span><i></i>{lang === "en" ? "Human authority" : "İnsan yetkisi"}</span>
       </div>
     </section>
 
-    <section class="container content-grid">
-      <article class="prose">
-        <slot />
-      </article>
-      <aside class="principle-note surface">
-        <span>{lang === "en" ? "Design invariant" : "Tasarım değişmezi"}</span>
-        <strong>
-          {
-            lang === "en"
-              ? "Intelligence may change. Trust boundaries must remain."
-              : "Zekâ değişebilir. Güven sınırları kalıcı olmalıdır."
-          }
-        </strong>
-      </aside>
-    </section>
+    <ExperienceSections {lang} {pageKey} />
 
-    {
-      pageKey === "platform" && (
-        <div class="container">
-          <PlatformFlow {lang} />
-          <TierDiagram {lang} />
-        </div>
-      )
-    }
+    <section class="narrative-section">
+      <div class="container narrative-head">
+        <p class="section-label">{lang === "en" ? "Manifesto & rationale" : "Manifesto ve yaklaşım"}</p>
+        <p>{lang === "en" ? "The thinking behind the system" : "Sistemin arkasındaki düşünce"}</p>
+      </div>
+      <div class="container content-grid">
+        <article class="prose">
+          <slot />
+        </article>
+        <aside class="principle-note surface">
+          <span>{lang === "en" ? "Design invariant" : "Tasarım değişmezi"}</span>
+          <strong>
+            {
+              lang === "en"
+                ? "Intelligence may change. Trust boundaries must remain."
+                : "Zekâ değişebilir. Güven sınırları kalıcı olmalıdır."
+            }
+          </strong>
+          <small>
+            {
+              lang === "en"
+                ? "A public vision for a secure, sovereign and adaptable AI operating layer."
+                : "Güvenli, egemen ve uyarlanabilir bir AI çalışma katmanı için kamusal vizyon."
+            }
+          </small>
+        </aside>
+      </div>
+    </section>
   </main>
 </BaseLayout>
 
 <style>
   .page-hero {
-    padding: 86px 0 70px;
+    padding: 76px 0 0;
+    border-bottom: 1px solid var(--line);
   }
 
   .page-hero--home {
-    padding-top: 72px;
+    padding-top: 68px;
   }
 
   .hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(440px, 1.05fr);
+    grid-template-columns: minmax(0, 0.85fr) minmax(500px, 1.15fr);
     align-items: center;
-    gap: clamp(45px, 7vw, 90px);
+    gap: clamp(42px, 6vw, 78px);
   }
 
   .hero-copy h1 {
     max-width: 820px;
     margin: 0 0 26px;
     color: var(--text);
-    font-size: clamp(3.1rem, 7.7vw, 7rem);
+    font-size: clamp(3.1rem, 7vw, 6.5rem);
     font-weight: 790;
     letter-spacing: -0.055em;
     line-height: 0.94;
@@ -139,7 +131,7 @@ const copy = labels[lang];
   }
 
   .page-hero:not(.page-hero--home) .hero-copy h1 {
-    font-size: clamp(3rem, 6vw, 5.6rem);
+    font-size: clamp(3rem, 5.4vw, 5.25rem);
   }
 
   .hero-actions {
@@ -154,7 +146,8 @@ const copy = labels[lang];
     grid-template-columns: minmax(0, 820px) minmax(220px, 1fr);
     align-items: start;
     gap: 70px;
-    padding-top: 45px;
+    padding-top: 56px;
+    padding-bottom: clamp(82px, 10vw, 130px);
   }
 
   .principle-note {
@@ -179,83 +172,77 @@ const copy = labels[lang];
     line-height: 1.4;
   }
 
-  .platform-constellation {
-    position: relative;
-    min-height: 420px;
-    overflow: hidden;
-    background:
-      radial-gradient(circle at 50% 50%, var(--glow), transparent 32%),
-      var(--bg-elevated);
+  .principle-note small {
+    display: block;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    line-height: 1.5;
   }
 
-  .platform-constellation::before,
-  .platform-constellation::after {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 470px;
-    height: 210px;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    content: "";
-    transform: translate(-50%, -50%) rotate(28deg);
-  }
-
-  .platform-constellation::after {
-    transform: translate(-50%, -50%) rotate(-28deg);
-  }
-
-  .constellation-core,
-  .constellation-node {
-    position: absolute;
-    z-index: 2;
+  .hero-rail {
     display: grid;
-    place-items: center;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    background: var(--surface);
-    color: var(--text);
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 64px;
+    border-top: 1px solid var(--line);
   }
 
-  .constellation-core {
-    top: 50%;
-    left: 50%;
-    width: 140px;
-    height: 140px;
-    border-color: var(--cyan);
-    color: var(--cyan);
-    font-weight: 830;
-    letter-spacing: 0.12em;
-    box-shadow: 0 0 55px var(--glow);
-    transform: translate(-50%, -50%);
-  }
-
-  .constellation-node {
-    width: 82px;
-    height: 82px;
+  .hero-rail span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 58px;
+    padding: 12px 18px;
+    border-right: 1px solid var(--line);
     color: var(--text-muted);
     font-size: 0.67rem;
-    font-weight: 720;
+    font-weight: 740;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
-  .constellation-node--one {
-    top: 13%;
-    left: 14%;
+  .hero-rail span:first-child {
+    border-left: 1px solid var(--line);
   }
 
-  .constellation-node--two {
-    top: 12%;
-    right: 11%;
+  .hero-rail i {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
   }
 
-  .constellation-node--three {
-    right: 10%;
-    bottom: 10%;
+  .hero-rail span:last-child i {
+    background: var(--amber);
+    box-shadow: 0 0 10px var(--amber);
   }
 
-  .constellation-node--four {
-    bottom: 9%;
-    left: 12%;
+  .narrative-section {
+    border-top: 1px solid var(--line);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--surface-muted) 42%, transparent), transparent 32rem);
+  }
+
+  .narrative-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-top: 48px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 760;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .narrative-head p {
+    margin: 0;
   }
 
   @media (max-width: 960px) {
@@ -276,11 +263,19 @@ const copy = labels[lang];
       position: static;
       max-width: 520px;
     }
+
+    .hero-rail {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-rail span:nth-child(3) {
+      border-left: 1px solid var(--line);
+    }
   }
 
   @media (max-width: 600px) {
     .page-hero {
-      padding: 58px 0 42px;
+      padding-top: 52px;
     }
 
     .hero-grid {
@@ -292,8 +287,20 @@ const copy = labels[lang];
       font-size: clamp(2.75rem, 16vw, 4.2rem);
     }
 
-    .platform-constellation {
-      min-height: 380px;
+    .hero-rail {
+      margin-top: 42px;
+    }
+
+    .hero-rail span {
+      min-height: 52px;
+      padding: 10px;
+      font-size: 0.59rem;
+    }
+
+    .narrative-head {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 8px;
     }
   }
 </style>
