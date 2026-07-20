@@ -1,0 +1,18 @@
+import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
+
+export default defineConfig({
+  site: "https://projectpulsar.org",
+  output: "static",
+  trailingSlash: "always",
+  build: {
+    format: "directory"
+  },
+  integrations: [
+    sitemap({
+      filter: (page) =>
+        page !== "https://projectpulsar.org/" &&
+        page !== "https://projectpulsar.org/404/"
+    })
+  ]
+});

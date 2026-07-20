@@ -1,0 +1,247 @@
+---
+import BrandMark from "./BrandMark.astro";
+import {
+  labels,
+  navigation,
+  paths,
+  type Language,
+  type PageKey
+} from "@/data/site";
+
+interface Props {
+  lang: Language;
+  pageKey: PageKey;
+}
+
+const { lang, pageKey } = Astro.props;
+const otherLang: Language = lang === "en" ? "tr" : "en";
+const otherPath = paths[pageKey][otherLang];
+const copy = labels[lang];
+---
+
+<header class="site-header">
+  <div class="header-inner container">
+    <a class="brand" href={paths.home[lang]} aria-label={`Project PULSAR — ${lang === "en" ? "Home" : "Ana sayfa"}`}>
+      <BrandMark compact />
+      <span>PROJECT <strong>PULSAR</strong></span>
+    </a>
+
+    <button
+      class="icon-button menu-button"
+      type="button"
+      aria-label={copy.menu}
+      aria-expanded="false"
+      aria-controls="primary-navigation"
+      data-menu-toggle
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+    </button>
+
+    <nav
+      id="primary-navigation"
+      class="navigation"
+      aria-label={copy.nav}
+      data-navigation
+    >
+      {
+        navigation[lang].map((item) => (
+          <a
+            href={item.href}
+            aria-current={item.key === pageKey ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="header-actions">
+      <a class="language-link" href={otherPath} lang={otherLang} aria-label={copy.languageLabel}>
+        {copy.language}
+      </a>
+      <button
+        class="icon-button theme-button"
+        type="button"
+        aria-label={copy.theme}
+        aria-pressed="false"
+        data-theme-toggle
+      >
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3.5"></circle>
+          <path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path>
+        </svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.1 15.4A8.6 8.6 0 0 1 8.6 3.9 8.7 8.7 0 1 0 20.1 15.4Z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    z-index: 50;
+    top: 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--header);
+    backdrop-filter: blur(20px);
+  }
+
+  .header-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    min-height: 74px;
+    gap: 26px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    font-size: 0.84rem;
+    font-weight: 540;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .brand strong {
+    color: var(--cyan);
+    font-weight: 820;
+  }
+
+  .navigation {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .navigation a,
+  .language-link {
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    font-weight: 680;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .navigation a:hover,
+  .navigation a[aria-current="page"],
+  .language-link:hover {
+    color: var(--cyan);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .language-link {
+    padding: 7px 2px;
+  }
+
+  .icon-button {
+    display: inline-grid;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    place-items: center;
+  }
+
+  .icon-button svg {
+    width: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .theme-button .moon,
+  .theme-button[data-active-theme="dark"] .sun {
+    display: none;
+  }
+
+  .theme-button[data-active-theme="dark"] .moon {
+    display: block;
+  }
+
+  .menu-button {
+    display: none;
+  }
+
+  @media (max-width: 940px) {
+    .header-inner {
+      grid-template-columns: auto auto 1fr;
+      gap: 12px;
+    }
+
+    .menu-button {
+      display: inline-grid;
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    .header-actions {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .navigation {
+      position: absolute;
+      top: calc(100% + 1px);
+      right: 14px;
+      left: 14px;
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .navigation[data-open] {
+      display: flex;
+    }
+
+    .navigation a {
+      padding: 12px 14px;
+      border-radius: 10px;
+    }
+
+    .navigation a:hover {
+      background: var(--surface-muted);
+    }
+  }
+
+  @media (max-width: 540px) {
+    .header-inner {
+      min-height: 68px;
+    }
+
+    .brand-mark {
+      display: none;
+    }
+
+    .brand {
+      font-size: 0.76rem;
+    }
+
+    .language-link {
+      font-size: 0.78rem;
+    }
+  }
+</style>

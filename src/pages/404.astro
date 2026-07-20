@@ -1,0 +1,39 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  lang="en"
+  pageKey="home"
+  title="Page not found"
+  description="The requested Project PULSAR page could not be found."
+>
+  <main id="main-content" class="not-found container">
+    <p class="eyebrow">404 / LOST SIGNAL</p>
+    <h1>There is no signal at this coordinate.</h1>
+    <p>The page may have moved, or the address may be incomplete.</p>
+    <a class="button button--primary" href="/en/">Return to Project PULSAR</a>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    min-height: 58vh;
+    padding-block: 110px;
+  }
+
+  h1 {
+    max-width: 850px;
+    margin: 0 0 20px;
+    color: var(--text);
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+  }
+
+  p:not(.eyebrow) {
+    margin-bottom: 30px;
+    color: var(--text-muted);
+    font-size: 1.15rem;
+  }
+</style>

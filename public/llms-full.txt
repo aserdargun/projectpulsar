@@ -1,0 +1,47 @@
+# Project PULSAR — Public Vision
+
+Project PULSAR stands for Private Unified Language Systems and AI Runtime.
+
+## Core thesis
+
+Models will change faster than the applications and controls around them. A durable AI foundation therefore needs a stable runtime that manages identity, permission, policy, routing, context, tools, verification and observability while keeping models replaceable.
+
+PULSAR is not a single chatbot and is not tied to one model family. It is a conceptual control and execution layer for trusted intelligence.
+
+## Design principles
+
+1. Trust is part of the request path.
+2. Models and major platform components remain replaceable.
+3. The smallest capability path that can satisfy a task should be preferred.
+4. Retrieved knowledge preserves source permissions and provenance.
+5. High-consequence outputs preserve explicit human authority.
+6. Architecture and capacity scale from measured demand and evidence.
+
+## Conceptual request path
+
+1. A person, application or agent expresses intent.
+2. Identity, permission, purpose and risk policy are evaluated.
+3. A router selects an appropriate capability path.
+4. Only permitted context and approved tools are introduced.
+5. A fast, medium or frontier capability tier handles the task.
+6. Evidence, policy checks, observability and human review shape the outcome.
+
+## Public use-case families
+
+- Knowledge navigation with source-linked, permission-aware answers.
+- Operational intelligence that supports investigation without inventing measurements.
+- Engineering and maintenance support that connects records and evidence.
+- Software and analytical assistance through bounded tool access.
+- Decision briefs that make sources, alternatives and uncertainty visible.
+
+## Trust model
+
+Sensitive information stays within approved trust and residency boundaries. Retrieval does not expand user authority. Important outputs retain enough trace context to understand identity, policy, model route, sources, tools, validation and human approval. Agent tool use begins read-only, allowlisted, time-bounded and subject to explicit approval before consequential action.
+
+## Roadmap discipline
+
+PULSAR advances through Explore, Validate, Build and Scale decision gates. Each gate requires evidence and allows three honest outcomes: advance, adjust and repeat, or stop.
+
+## Status
+
+This is a forward-looking public vision under validation. It does not describe a completed or deployed product, guarantee performance or claim organizational affiliation.

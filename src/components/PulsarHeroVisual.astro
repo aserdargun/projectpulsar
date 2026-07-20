@@ -1,0 +1,239 @@
+---
+import type { Language } from "@/data/site";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const text =
+  lang === "en"
+    ? {
+        core: "Trusted runtime",
+        orbit1: "Identity & policy",
+        orbit2: "Context & tools",
+        orbit3: "Adaptive models",
+        orbit4: "Evidence & oversight"
+      }
+    : {
+        core: "Güvenilir çalışma katmanı",
+        orbit1: "Kimlik ve politika",
+        orbit2: "Bağlam ve araçlar",
+        orbit3: "Uyarlanabilir modeller",
+        orbit4: "Kanıt ve gözetim"
+      };
+---
+
+<div class="pulsar-visual surface" role="img" aria-label={`${text.core}: ${text.orbit1}, ${text.orbit2}, ${text.orbit3}, ${text.orbit4}`}>
+  <div class="orbit orbit--outer"></div>
+  <div class="orbit orbit--middle"></div>
+  <div class="orbit orbit--inner"></div>
+  <div class="beam beam--one"></div>
+  <div class="beam beam--two"></div>
+  <div class="core">
+    <span class="core-dot"></span>
+    <strong>PULSAR</strong>
+    <small>{text.core}</small>
+  </div>
+  <span class="node node--one">{text.orbit1}</span>
+  <span class="node node--two">{text.orbit2}</span>
+  <span class="node node--three">{text.orbit3}</span>
+  <span class="node node--four">{text.orbit4}</span>
+</div>
+
+<style>
+  .pulsar-visual {
+    position: relative;
+    min-height: 520px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 50%, var(--glow), transparent 35%),
+      var(--bg-elevated);
+    isolation: isolate;
+  }
+
+  .pulsar-visual::before {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--cyan) 0.8px, transparent 0.8px);
+    background-size: 24px 24px;
+    content: "";
+    opacity: 0.15;
+  }
+
+  .core {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    width: 174px;
+    height: 174px;
+    place-content: center;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow:
+      0 0 0 18px color-mix(in srgb, var(--cyan) 8%, transparent),
+      0 0 65px var(--glow);
+    text-align: center;
+    transform: translate(-50%, -50%);
+  }
+
+  .core-dot {
+    width: 9px;
+    height: 9px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 18px var(--cyan);
+  }
+
+  .core strong {
+    color: var(--text);
+    font-size: 1.35rem;
+    letter-spacing: 0.12em;
+  }
+
+  .core small {
+    max-width: 130px;
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+  }
+
+  .orbit {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+  }
+
+  .orbit--inner {
+    width: 260px;
+    height: 150px;
+  }
+
+  .orbit--middle {
+    width: 410px;
+    height: 235px;
+    transform: translate(-50%, -50%) rotate(52deg);
+  }
+
+  .orbit--outer {
+    width: 500px;
+    height: 355px;
+    border-color: color-mix(in srgb, var(--cyan) 35%, transparent);
+    transform: translate(-50%, -50%) rotate(-36deg);
+  }
+
+  .beam {
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    left: 50%;
+    width: 720px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0.35;
+    transform-origin: center;
+  }
+
+  .beam--one {
+    transform: translate(-50%, -50%) rotate(35deg);
+  }
+
+  .beam--two {
+    transform: translate(-50%, -50%) rotate(-35deg);
+  }
+
+  .node {
+    position: absolute;
+    z-index: 5;
+    max-width: 144px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.68rem;
+    font-weight: 730;
+    text-align: center;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  }
+
+  .node::before {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    content: "";
+  }
+
+  .node--one {
+    top: 14%;
+    left: 12%;
+  }
+
+  .node--two {
+    top: 18%;
+    right: 9%;
+  }
+
+  .node--three {
+    right: 9%;
+    bottom: 14%;
+  }
+
+  .node--four {
+    bottom: 13%;
+    left: 8%;
+  }
+
+  @media (max-width: 820px) {
+    .pulsar-visual {
+      min-height: 430px;
+    }
+
+    .orbit--outer {
+      width: 390px;
+      height: 290px;
+    }
+
+    .orbit--middle {
+      width: 330px;
+      height: 190px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pulsar-visual {
+      min-height: 420px;
+    }
+
+    .core {
+      width: 142px;
+      height: 142px;
+    }
+
+    .orbit--outer {
+      width: 330px;
+      height: 270px;
+    }
+
+    .orbit--middle {
+      width: 275px;
+      height: 175px;
+    }
+
+    .node {
+      max-width: 120px;
+      font-size: 0.61rem;
+    }
+  }
+</style>

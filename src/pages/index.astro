@@ -1,0 +1,21 @@
+---
+import { SITE_URL } from "@/data/site";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="refresh" content="0;url=/en/" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={`${SITE_URL}/en/`} />
+    <title>Project PULSAR</title>
+    <script is:inline>
+      window.location.replace("/en/");
+    </script>
+  </head>
+  <body>
+    <p><a href="/en/">Continue in English</a> · <a href="/tr/">Türkçe devam et</a></p>
+  </body>
+</html>

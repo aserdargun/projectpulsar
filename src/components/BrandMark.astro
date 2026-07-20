@@ -1,0 +1,52 @@
+---
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<span class:list={["brand-mark", { "brand-mark--compact": compact }]} aria-hidden="true">
+  <svg viewBox="0 0 48 48" role="img">
+    <circle cx="24" cy="24" r="3.5"></circle>
+    <ellipse cx="24" cy="24" rx="20" ry="8.5"></ellipse>
+    <ellipse cx="24" cy="24" rx="20" ry="8.5" transform="rotate(60 24 24)"></ellipse>
+    <ellipse cx="24" cy="24" rx="20" ry="8.5" transform="rotate(120 24 24)"></ellipse>
+  </svg>
+</span>
+
+<style>
+  .brand-mark {
+    display: inline-grid;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--cyan);
+    box-shadow: 0 0 30px var(--glow);
+  }
+
+  .brand-mark--compact {
+    width: 32px;
+    height: 32px;
+  }
+
+  svg {
+    width: 72%;
+    height: 72%;
+    overflow: visible;
+  }
+
+  circle {
+    fill: currentColor;
+  }
+
+  ellipse {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.35;
+  }
+</style>

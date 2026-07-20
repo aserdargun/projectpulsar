@@ -1,0 +1,153 @@
+---
+import type { Language } from "@/data/site";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const tiers =
+  lang === "en"
+    ? [
+        ["FAST", "Responsive", "Routine requests, retrieval and classification"],
+        ["MEDIUM", "Capable", "Technical synthesis, analysis and bounded agents"],
+        ["FRONTIER", "Deep", "Complex reasoning and high-consequence support"]
+      ]
+    : [
+        ["FAST", "Hızlı", "Rutin istekler, erişim ve sınıflandırma"],
+        ["MEDIUM", "Yetenekli", "Teknik sentez, analiz ve sınırlandırılmış agent'lar"],
+        ["FRONTIER", "Derin", "Karmaşık muhakeme ve kritik karar desteği"]
+      ];
+---
+
+<section class="tier-section" aria-labelledby="tier-title">
+  <div>
+    <p class="eyebrow">{lang === "en" ? "Adaptive intelligence" : "Uyarlanabilir zekâ"}</p>
+    <h2 id="tier-title">
+      {lang === "en" ? "Enough intelligence for the task" : "Görev için yeterli zekâ"}
+    </h2>
+    <p class="tier-lede">
+      {
+        lang === "en"
+          ? "PULSAR does not assume every request needs the largest model. It routes by capability, risk, latency and evidence."
+          : "PULSAR her isteğin en büyük modele ihtiyaç duyduğunu varsaymaz. Yetenek, risk, gecikme ve kanıta göre yönlendirir."
+      }
+    </p>
+  </div>
+  <div class="tiers">
+    {
+      tiers.map(([name, quality, description], index) => (
+        <article style={`--tier-index:${index}`}>
+          <span class="signal" aria-hidden="true"></span>
+          <div>
+            <small>{quality}</small>
+            <h3>{name}</h3>
+            <p>{description}</p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .tier-section {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(420px, 1.2fr);
+    align-items: center;
+    gap: 70px;
+    margin-top: 110px;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .tier-lede {
+    color: var(--text-muted);
+    font-size: 1.03rem;
+  }
+
+  .tiers {
+    display: grid;
+    gap: 13px;
+  }
+
+  article {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    align-items: center;
+    min-height: 126px;
+    padding: 17px 22px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--bg-elevated);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.08);
+  }
+
+  article:nth-child(2) {
+    margin-left: 26px;
+  }
+
+  article:nth-child(3) {
+    margin-left: 52px;
+  }
+
+  .signal {
+    width: calc(24px + var(--tier-index) * 9px);
+    height: calc(24px + var(--tier-index) * 9px);
+    border: 1px solid
+      color-mix(in srgb, var(--cyan) calc(50% + var(--tier-index) * 15%), transparent);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--cyan) calc(10% + var(--tier-index) * 5%), transparent);
+    box-shadow: 0 0 calc(18px + var(--tier-index) * 7px) var(--glow);
+  }
+
+  small {
+    color: var(--cyan);
+    font-size: 0.67rem;
+    font-weight: 790;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 1px 0 3px;
+    color: var(--text);
+    font-size: 1.22rem;
+    letter-spacing: 0.06em;
+  }
+
+  article p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+  }
+
+  @media (max-width: 850px) {
+    .tier-section {
+      grid-template-columns: 1fr;
+      gap: 34px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .tier-section {
+      margin-top: 80px;
+    }
+
+    article {
+      grid-template-columns: 54px 1fr;
+      padding: 15px;
+    }
+
+    article:nth-child(2),
+    article:nth-child(3) {
+      margin-left: 0;
+    }
+  }
+</style>

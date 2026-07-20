@@ -1,0 +1,104 @@
+---
+import BrandMark from "./BrandMark.astro";
+import { labels, paths, type Language } from "@/data/site";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const copy = labels[lang];
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <BrandMark compact />
+      <div>
+        <strong>Project PULSAR</strong>
+        <p>{copy.footer}</p>
+      </div>
+    </div>
+
+    <nav aria-label={lang === "en" ? "Footer navigation" : "Alt menü"}>
+      <a href={paths.vision[lang]}>{lang === "en" ? "Vision" : "Vizyon"}</a>
+      <a href={paths.trust[lang]}>{lang === "en" ? "Trust" : "Güven"}</a>
+      <a href="https://github.com/aserdargun/projectpulsar" rel="external">
+        {copy.source}
+      </a>
+    </nav>
+  </div>
+  <div class="container footer-meta">
+    <p>{copy.disclaimer}</p>
+    <p>© {new Date().getFullYear()} Project PULSAR</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 100px;
+    padding: 54px 0 30px;
+    border-top: 1px solid var(--line);
+    background: var(--bg-elevated);
+  }
+
+  .footer-grid {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  .footer-brand {
+    display: flex;
+    max-width: 560px;
+    gap: 15px;
+  }
+
+  strong {
+    color: var(--text);
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  nav a {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 660;
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--cyan);
+  }
+
+  .footer-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 36px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+  }
+
+  .footer-meta p:first-child {
+    max-width: 720px;
+  }
+
+  @media (max-width: 720px) {
+    .footer-grid,
+    .footer-meta {
+      flex-direction: column;
+    }
+  }
+</style>

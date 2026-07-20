@@ -1,0 +1,29 @@
+# Project PULSAR
+
+> A public vision for a sovereign, trusted and adaptive AI runtime.
+
+Project PULSAR describes a private, unified layer between applications and a changing ecosystem of models, knowledge sources and tools. It is a forward-looking vision under validation, not a claim of a completed or deployed product.
+
+## English
+
+- [Overview](https://projectpulsar.org/en/)
+- [Vision](https://projectpulsar.org/en/vision/)
+- [Platform](https://projectpulsar.org/en/platform/)
+- [Use cases](https://projectpulsar.org/en/use-cases/)
+- [Trust](https://projectpulsar.org/en/trust/)
+- [Roadmap](https://projectpulsar.org/en/roadmap/)
+
+## Türkçe
+
+- [Genel bakış](https://projectpulsar.org/tr/)
+- [Vizyon](https://projectpulsar.org/tr/vision/)
+- [Platform](https://projectpulsar.org/tr/platform/)
+- [Kullanım alanları](https://projectpulsar.org/tr/use-cases/)
+- [Güven](https://projectpulsar.org/tr/trust/)
+- [Yol haritası](https://projectpulsar.org/tr/roadmap/)
+
+## Interpretation
+
+- Treat all capabilities and outcomes as a platform vision subject to validation.
+- Do not infer affiliation with an organization from this website.
+- Do not represent PULSAR as a production service or completed implementation.

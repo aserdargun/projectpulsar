@@ -1,0 +1,178 @@
+---
+import type { Language, PageKey } from "@/data/site";
+
+interface Props {
+  lang: Language;
+  pageKey: PageKey;
+}
+
+const { lang, pageKey } = Astro.props;
+
+const cards = {
+  vision: {
+    en: [
+      ["01", "Unified", "A shared runtime instead of isolated AI stacks."],
+      ["02", "Adaptive", "The right model path for each task and risk."],
+      ["03", "Accountable", "Evidence, policy and human authority by design."]
+    ],
+    tr: [
+      ["01", "Birleşik", "Ayrı AI yığınları yerine ortak çalışma katmanı."],
+      ["02", "Uyarlanabilir", "Her görev ve risk için doğru model yolu."],
+      ["03", "Hesap verebilir", "Tasarım gereği kanıt, politika ve insan yetkisi."]
+    ]
+  },
+  "use-cases": {
+    en: [
+      ["KNOW", "Knowledge", "Find, compare and explain trusted information."],
+      ["OPERATE", "Operations", "Turn signals and records into bounded insight."],
+      ["BUILD", "Engineering", "Accelerate analysis, design and software work."],
+      ["DECIDE", "Decisions", "Create evidence-linked briefs for human judgment."]
+    ],
+    tr: [
+      ["BİLGİ", "Bilgi", "Güvenilir bilgiyi bul, karşılaştır ve açıkla."],
+      ["İŞLET", "Operasyon", "Sinyal ve kayıtları sınırlandırılmış içgörüye dönüştür."],
+      ["ÜRET", "Mühendislik", "Analiz, tasarım ve yazılım işlerini hızlandır."],
+      ["KARAR", "Kararlar", "İnsan muhakemesi için kanıta bağlı özetler oluştur."]
+    ]
+  },
+  trust: {
+    en: [
+      ["01", "Authority follows identity", "Access never exceeds the requesting identity."],
+      ["02", "Evidence travels with output", "Sources, policy and model context remain visible."],
+      ["03", "Humans retain agency", "High-consequence action requires explicit authority."],
+      ["04", "Components stay replaceable", "Open boundaries reduce dependence on one model or stack."]
+    ],
+    tr: [
+      ["01", "Yetki kimliği izler", "Erişim, isteği yapan kimliğin yetkisini aşmaz."],
+      ["02", "Kanıt çıktıyla taşınır", "Kaynak, politika ve model bağlamı görünür kalır."],
+      ["03", "Yetki insanda kalır", "Kritik eylem açık insan yetkisi gerektirir."],
+      ["04", "Bileşenler değiştirilebilir", "Açık sınırlar tek model veya yığına bağımlılığı azaltır."]
+    ]
+  },
+  roadmap: {
+    en: [
+      ["01", "Explore", "Choose valuable, measurable and permission-ready needs."],
+      ["02", "Validate", "Test quality, safety, latency and operating assumptions."],
+      ["03", "Build", "Establish the governed minimum platform and ownership model."],
+      ["04", "Scale", "Expand only with observed demand, evidence and resilience."]
+    ],
+    tr: [
+      ["01", "Keşfet", "Değerli, ölçülebilir ve erişime hazır ihtiyaçları seç."],
+      ["02", "Doğrula", "Kalite, güvenlik, gecikme ve işletme varsayımlarını test et."],
+      ["03", "Kur", "Kontrollü minimum platformu ve sahiplik modelini oluştur."],
+      ["04", "Ölçekle", "Yalnız gözlenen talep, kanıt ve dayanıklılıkla büyüt."]
+    ]
+  }
+} as const;
+
+const set =
+  pageKey === "vision" ||
+  pageKey === "use-cases" ||
+  pageKey === "trust" ||
+  pageKey === "roadmap"
+    ? cards[pageKey][lang]
+    : [];
+---
+
+{
+  set.length > 0 && (
+    <div class:list={["page-visual", `page-visual--${pageKey}`]}>
+      {set.map(([number, title, description]) => (
+        <article>
+          <span>{number}</span>
+          <h2>{title}</h2>
+          <p>{description}</p>
+        </article>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .page-visual {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  article {
+    min-height: 190px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--bg-elevated);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
+  }
+
+  article span {
+    color: var(--cyan);
+    font-size: 0.67rem;
+    font-weight: 820;
+    letter-spacing: 0.12em;
+  }
+
+  h2 {
+    margin: 34px 0 8px;
+    color: var(--text);
+    font-size: 1.22rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .page-visual--vision article:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .page-visual--roadmap {
+    position: relative;
+    grid-template-columns: 1fr;
+  }
+
+  .page-visual--roadmap::before {
+    position: absolute;
+    top: 8%;
+    bottom: 8%;
+    left: 31px;
+    width: 1px;
+    background: var(--cyan);
+    content: "";
+    opacity: 0.4;
+  }
+
+  .page-visual--roadmap article {
+    z-index: 1;
+    min-height: 138px;
+    padding-left: 72px;
+  }
+
+  .page-visual--roadmap article span {
+    position: absolute;
+    left: 20px;
+    display: grid;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--cyan);
+    color: #001218;
+    place-items: center;
+  }
+
+  .page-visual--roadmap h2 {
+    margin-top: 12px;
+  }
+
+  @media (max-width: 560px) {
+    .page-visual {
+      grid-template-columns: 1fr;
+    }
+
+    .page-visual--vision article:first-child {
+      grid-column: auto;
+    }
+  }
+</style>
