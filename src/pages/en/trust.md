@@ -6,7 +6,7 @@ slug: "trust"
 title: "Trust is a runtime behavior."
 description: "Project PULSAR treats data sovereignty, inherited permissions, verifiable outputs and human authority as architectural behavior."
 navLabel: "Trust"
-order: 5
+order: 6
 draft: false
 eyebrow: "Governance in the request path"
 lead: "A policy document cannot govern a system it cannot observe. PULSAR turns trust principles into explicit checks, boundaries and evidence throughout the runtime."

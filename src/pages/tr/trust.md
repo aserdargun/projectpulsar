@@ -6,7 +6,7 @@ slug: "trust"
 title: "Güven, çalışma zamanı davranışıdır."
 description: "Project PULSAR veri egemenliği, devralınan yetkiler, doğrulanabilir çıktılar ve insan yetkisini mimari davranış olarak ele alır."
 navLabel: "Güven"
-order: 5
+order: 6
 draft: false
 eyebrow: "İstek akışında yönetişim"
 lead: "Bir politika belgesi, gözlemleyemediği sistemi yönetemez. PULSAR güven ilkelerini çalışma katmanı boyunca açık kontrol, sınır ve kanıta dönüştürür."

@@ -1,0 +1,867 @@
+---
+import {
+  BadgeCheck,
+  Boxes,
+  Database,
+  ClipboardCheck,
+  FlaskConical,
+  Gauge,
+  GitCompareArrows,
+  HardDrive,
+  Microscope,
+  PackageCheck,
+  RefreshCcw,
+  Scale,
+  Server,
+  ShieldCheck,
+  SlidersHorizontal
+} from "@lucide/astro";
+import type { Language } from "@/data/site";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const en = lang === "en";
+
+const models = en
+  ? [
+      {
+        status: "LOCAL ADAPT",
+        name: "Qwen3-8B",
+        role: "Practical local fine-tuning candidate",
+        scale: "8.2B parameters",
+        context: "32K native · 131K with YaRN",
+        license: "Apache 2.0",
+        note: "A useful starting point for domain behavior, structured output and bilingual experiments. “Qwen 3.8” is interpreted here as the official Qwen3-8B model.",
+        href: "https://huggingface.co/Qwen/Qwen3-8B"
+      },
+      {
+        status: "CLUSTER PILOT",
+        name: "Qwen3.6-35B-A3B",
+        role: "Efficient medium-scale MoE candidate",
+        scale: "35B total · 3B activated",
+        context: "262K native",
+        license: "Apache 2.0",
+        note: "A current open-weight MoE reference for evaluating quality, latency and memory trade-offs on a capable local server.",
+        href: "https://huggingface.co/Qwen/Qwen3.6-35B-A3B"
+      },
+      {
+        status: "FRONTIER REFERENCE",
+        name: "Kimi-K2.6",
+        role: "General and multimodal reference",
+        scale: "1T total · 32B activated",
+        context: "256K",
+        license: "Modified MIT",
+        note: "A frontier-scale open-weight system for architecture and evaluation research. Its storage and serving envelope makes it a cluster reference, not a first fine-tuning target.",
+        href: "https://huggingface.co/moonshotai/Kimi-K2.6"
+      },
+      {
+        status: "FRONTIER REFERENCE",
+        name: "Kimi-K2.7-Code",
+        role: "Agentic coding reference",
+        scale: "1T total · 32B activated",
+        context: "256K",
+        license: "Modified MIT",
+        note: "A coding-focused open-weight reference for long-horizon software tasks, tool use and controlled agent evaluation.",
+        href: "https://huggingface.co/moonshotai/Kimi-K2.7-Code"
+      },
+      {
+        status: "FRONTIER REFERENCE",
+        name: "Qwen3.5-397B-A17B",
+        role: "Large multimodal reference",
+        scale: "397B total · 17B activated",
+        context: "262K native",
+        license: "Apache 2.0",
+        note: "A large MoE reference for multimodal and agentic evaluation. It belongs in the portfolio as a benchmark target, not as the default local adaptation model.",
+        href: "https://huggingface.co/Qwen/Qwen3.5-397B-A17B"
+      },
+      {
+        status: "FRONTIER REFERENCE",
+        name: "GLM-5",
+        role: "Long-horizon systems reference",
+        scale: "744B total · 40B activated",
+        context: "200K",
+        license: "MIT",
+        note: "A large open-weight reference for complex systems engineering and long-horizon agent research. Validate the exact workload instead of relying on leaderboard rank.",
+        href: "https://huggingface.co/zai-org/GLM-5"
+      }
+    ]
+  : [
+      {
+        status: "LOKAL UYARLAMA",
+        name: "Qwen3-8B",
+        role: "Pratik lokal ince ayar adayı",
+        scale: "8,2B parametre",
+        context: "32K doğal · YaRN ile 131K",
+        license: "Apache 2.0",
+        note: "Alan davranışı, yapılandırılmış çıktı ve iki dilli deneyler için kullanışlı bir başlangıçtır. “Qwen 3.8” ifadesi burada resmî model adı olan Qwen3-8B olarak yorumlanır.",
+        href: "https://huggingface.co/Qwen/Qwen3-8B"
+      },
+      {
+        status: "KÜME PİLOTU",
+        name: "Qwen3.6-35B-A3B",
+        role: "Verimli orta ölçekli MoE adayı",
+        scale: "35B toplam · 3B aktif",
+        context: "262K doğal",
+        license: "Apache 2.0",
+        note: "Güçlü bir lokal sunucuda kalite, gecikme ve bellek dengelerini ölçmek için güncel bir açık-ağırlık MoE referansıdır.",
+        href: "https://huggingface.co/Qwen/Qwen3.6-35B-A3B"
+      },
+      {
+        status: "ÖNCÜ REFERANS",
+        name: "Kimi-K2.6",
+        role: "Genel ve çok kipli referans",
+        scale: "1T toplam · 32B aktif",
+        context: "256K",
+        license: "Değiştirilmiş MIT",
+        note: "Mimari ve değerlendirme araştırmaları için öncü ölçekte açık-ağırlık bir sistemdir. Depolama ve sunum ihtiyacı nedeniyle ilk ince ayar hedefi değil, küme referansıdır.",
+        href: "https://huggingface.co/moonshotai/Kimi-K2.6"
+      },
+      {
+        status: "ÖNCÜ REFERANS",
+        name: "Kimi-K2.7-Code",
+        role: "Ajan tabanlı kodlama referansı",
+        scale: "1T toplam · 32B aktif",
+        context: "256K",
+        license: "Değiştirilmiş MIT",
+        note: "Uzun soluklu yazılım görevleri, araç kullanımı ve kontrollü ajan değerlendirmesi için kodlama odaklı açık-ağırlık referanstır.",
+        href: "https://huggingface.co/moonshotai/Kimi-K2.7-Code"
+      },
+      {
+        status: "ÖNCÜ REFERANS",
+        name: "Qwen3.5-397B-A17B",
+        role: "Büyük çok kipli referans",
+        scale: "397B toplam · 17B aktif",
+        context: "262K doğal",
+        license: "Apache 2.0",
+        note: "Çok kipli ve ajan tabanlı değerlendirme için büyük bir MoE referansıdır. Varsayılan lokal uyarlama modeli değil, kıyas hedefi olarak portföyde yer alır.",
+        href: "https://huggingface.co/Qwen/Qwen3.5-397B-A17B"
+      },
+      {
+        status: "ÖNCÜ REFERANS",
+        name: "GLM-5",
+        role: "Uzun soluklu sistem referansı",
+        scale: "744B toplam · 40B aktif",
+        context: "200K",
+        license: "MIT",
+        note: "Karmaşık sistem mühendisliği ve uzun soluklu ajan araştırmaları için büyük bir açık-ağırlık referanstır. Sıralama yerine gerçek iş yükünü doğrulayın.",
+        href: "https://huggingface.co/zai-org/GLM-5"
+      }
+    ];
+
+const decisionLadder = en
+  ? [
+      ["01", "Prompt and tools", "Start here when the model already has the capability and the missing piece is instruction, workflow or deterministic computation.", SlidersHorizontal],
+      ["02", "Retrieval-augmented generation", "Use governed retrieval for changing facts, private knowledge and source-backed answers. Fine-tuning is not a knowledge database.", Database],
+      ["03", "LoRA", "Train small adapter matrices when behavior, tone, format or domain task performance needs repeatable adaptation.", GitCompareArrows],
+      ["04", "QLoRA", "Use a quantized base model plus trainable adapters when local accelerator memory is the primary constraint.", HardDrive],
+      ["05", "Continued pre-training or full tuning", "Reserve for evidence-backed cases with sufficient data rights, compute, evaluation depth and recovery controls.", Boxes]
+    ]
+  : [
+      ["01", "İstem ve araçlar", "Model gerekli yeteneğe zaten sahipse ve eksik parça talimat, iş akışı veya deterministik hesaplamaysa buradan başlayın.", SlidersHorizontal],
+      ["02", "Erişim destekli üretim", "Değişen gerçekler, özel bilgi ve kaynaklı yanıtlar için yönetişimli RAG kullanın. İnce ayar bir bilgi veritabanı değildir.", Database],
+      ["03", "LoRA", "Davranış, ton, biçim veya alan görevi performansı tekrarlanabilir biçimde uyarlanacaksa küçük adaptör matrislerini eğitin.", GitCompareArrows],
+      ["04", "QLoRA", "Lokal hızlandırıcı belleği temel kısıtsa kuantize temel model ve eğitilebilir adaptörler kullanın.", HardDrive],
+      ["05", "Sürekli ön eğitim veya tam eğitim", "Yeterli veri hakkı, işlem gücü, değerlendirme derinliği ve kurtarma kontrolü olan kanıtlanmış durumlara ayırın.", Boxes]
+    ];
+
+const workflow = en
+  ? [
+      ["01", "Charter the data", "Record ownership, consent, license, purpose, retention and prohibited content before a training row exists.", ClipboardCheck],
+      ["02", "Freeze the baseline", "Pin model revision and checksums; create immutable quality, safety and memorization evaluations.", PackageCheck],
+      ["03", "Run an isolated experiment", "Use Unsloth with a pinned environment, LoRA or QLoRA, limited access and complete experiment metadata.", FlaskConical],
+      ["04", "Challenge the result", "Compare held-out quality, refusal, privacy, bias and task regressions against the untouched baseline.", Microscope],
+      ["05", "Package provenance", "Version the adapter, tokenizer, prompt template, dataset manifest, evaluation report and model card together.", BadgeCheck],
+      ["06", "Release with rollback", "Canary the bounded use case, monitor real outcomes and preserve a tested route back to the previous artifact.", RefreshCcw]
+    ]
+  : [
+      ["01", "Veriyi sözleşmeye bağla", "Bir eğitim satırı oluşmadan sahipliği, rızayı, lisansı, amacı, saklamayı ve yasak içeriği kaydedin.", ClipboardCheck],
+      ["02", "Başlangıç çizgisini dondur", "Model sürümünü ve sağlama toplamını sabitleyin; değişmez kalite, güvenlik ve ezberleme testleri oluşturun.", PackageCheck],
+      ["03", "İzole deney yürüt", "Unsloth'u sabitlenmiş ortam, LoRA veya QLoRA, sınırlı erişim ve eksiksiz deney üstverisiyle kullanın.", FlaskConical],
+      ["04", "Sonucu zorla", "Ayrılmış veride kalite, ret davranışı, gizlilik, yanlılık ve görev gerilemelerini dokunulmamış başlangıçla karşılaştırın.", Microscope],
+      ["05", "Köken bilgisini paketle", "Adaptörü, tokenizer'ı, istem şablonunu, veri manifestini, değerlendirme raporunu ve model kartını birlikte sürümleyin.", BadgeCheck],
+      ["06", "Geri dönüşle yayımla", "Sınırlı kullanım alanında kontrollü yayın yapın, gerçek sonuçları izleyin ve önceki artefakta sınanmış dönüş yolunu koruyun.", RefreshCcw]
+    ];
+
+const hardware = en
+  ? [
+      ["16–24 GB VRAM", "Local QLoRA laboratory", "Qwen3-8B and smaller Qwen3.5 variants are practical starting points. Unsloth reports Qwen3-14B fitting a 16 GB T4; actual fit still depends on sequence length, batch, optimizer and checkpointing.", Gauge],
+      ["48–96 GB VRAM", "Deeper adaptation pilot", "Explore larger dense models or 30–35B MoE adapters. Unsloth reports about 56 GB for Qwen3.5-27B bf16 LoRA and 74 GB for Qwen3.5-35B-A3B bf16 LoRA.", Server],
+      ["Multi-GPU cluster", "Frontier serving and evaluation", "Kimi, large Qwen and GLM references need substantially more accelerator memory, storage, networking and operations. Measure them as shared infrastructure, not workstation projects.", Scale]
+    ]
+  : [
+      ["16–24 GB VRAM", "Lokal QLoRA laboratuvarı", "Qwen3-8B ve daha küçük Qwen3.5 türevleri pratik başlangıçlardır. Unsloth, Qwen3-14B'nin 16 GB T4'e sığdığını bildirir; gerçek ihtiyaç dizi uzunluğu, batch, optimizer ve checkpoint ayarına bağlıdır.", Gauge],
+      ["48–96 GB VRAM", "Daha derin uyarlama pilotu", "Daha büyük dense modelleri veya 30–35B MoE adaptörlerini deneyin. Unsloth, Qwen3.5-27B bf16 LoRA için yaklaşık 56 GB, Qwen3.5-35B-A3B için 74 GB bildirir.", Server],
+      ["Çoklu GPU kümesi", "Öncü model sunumu ve değerlendirme", "Kimi, büyük Qwen ve GLM referansları çok daha fazla hızlandırıcı belleği, depolama, ağ ve işletim gerektirir. Bunları iş istasyonu projesi değil, paylaşımlı altyapı olarak ölçün.", Scale]
+    ];
+
+const guardrails = en
+  ? [
+      "Remove secrets and direct identifiers before training.",
+      "Keep train, validation and final evaluation sets separate.",
+      "Review the model license and dataset rights for the intended use.",
+      "Test memorization, unsafe completion and permission-boundary regressions.",
+      "Register every adapter and retain its full provenance.",
+      "Require a named human owner and a tested rollback path."
+    ]
+  : [
+      "Eğitimden önce sırları ve doğrudan kimlik belirteçlerini kaldırın.",
+      "Eğitim, doğrulama ve nihai değerlendirme kümelerini ayırın.",
+      "Hedeflenen kullanım için model lisansını ve veri haklarını inceleyin.",
+      "Ezberleme, güvensiz tamamlama ve yetki sınırı gerilemelerini sınayın.",
+      "Her adaptörü eksiksiz köken bilgisiyle kaydedin.",
+      "İsimlendirilmiş insan sorumlusu ve sınanmış geri dönüş yolu zorunlu olsun."
+    ];
+---
+
+<section class="model-section container" aria-labelledby="portfolio-title">
+  <div class="section-head">
+    <div>
+      <p class="section-index">01 / {en ? "Open-weight portfolio" : "Açık-ağırlık portföyü"}</p>
+      <h2 id="portfolio-title">{en ? "A portfolio, not a leaderboard" : "Bir sıralama değil, model portföyü"}</h2>
+    </div>
+    <p>
+      {
+        en
+          ? "The strongest model is the smallest governed option that passes the workload’s quality, latency, risk and cost gates."
+          : "En güçlü model; iş yükünün kalite, gecikme, risk ve maliyet kapılarını geçen, yönetişilebilir en küçük seçenektir."
+      }
+    </p>
+  </div>
+
+  <div class="model-grid">
+    {
+      models.map((model) => (
+        <article class="model-card">
+          <div class="model-card__top">
+            <span class="status">{model.status}</span>
+            <a href={model.href} rel="external">
+              {en ? "Official model card" : "Resmî model kartı"} <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <h3>{model.name}</h3>
+          <p class="role">{model.role}</p>
+          <dl>
+            <div><dt>{en ? "Scale" : "Ölçek"}</dt><dd>{model.scale}</dd></div>
+            <div><dt>{en ? "Context" : "Bağlam"}</dt><dd>{model.context}</dd></div>
+            <div><dt>{en ? "License" : "Lisans"}</dt><dd>{model.license}</dd></div>
+          </dl>
+          <p class="note">{model.note}</p>
+        </article>
+      ))
+    }
+  </div>
+
+  <aside class="verification-callout" aria-label={en ? "Model naming verification" : "Model adı doğrulaması"}>
+    <ShieldCheck size={28} stroke-width={1.6} aria-hidden="true" />
+    <div>
+      <span>{en ? "VERIFIED 20 JULY 2026" : "20 TEMMUZ 2026'DA DOĞRULANDI"}</span>
+      <h3>{en ? "Names need evidence too" : "Model adları da kanıt gerektirir"}</h3>
+      <p>
+        {
+          en
+            ? "The official Qwen catalog contains Qwen3-8B—not a release named “Qwen 3.8.” No Kimi K3 model card, weights, license and checksums were found in Moonshot AI’s official model hub or GitHub organization on the verification date. PULSAR therefore keeps Kimi K3 on a watchlist and uses Kimi K2.6 and K2.7-Code as verifiable references."
+            : "Resmî Qwen kataloğunda “Qwen 3.8” adlı bir sürüm değil, Qwen3-8B bulunuyor. Doğrulama tarihinde Moonshot AI'ın resmî model merkezi ve GitHub organizasyonunda Kimi K3 model kartı, ağırlıkları, lisansı ve sağlama toplamları bulunamadı. PULSAR bu nedenle Kimi K3'ü izleme listesinde tutuyor; doğrulanabilir referans olarak Kimi K2.6 ve K2.7-Code'u kullanıyor."
+        }
+      </p>
+      <div class="source-row">
+        <a href="https://huggingface.co/Qwen/models" rel="external">{en ? "Qwen official catalog" : "Qwen resmî kataloğu"} ↗</a>
+        <a href="https://huggingface.co/moonshotai/models" rel="external">{en ? "Moonshot official catalog" : "Moonshot resmî kataloğu"} ↗</a>
+        <a href="https://github.com/moonshotai" rel="external">{en ? "Moonshot GitHub" : "Moonshot GitHub"} ↗</a>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<section class="model-section model-section--tint">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="section-index">02 / {en ? "Adaptation decision" : "Uyarlama kararı"}</p>
+        <h2>{en ? "Tune only the part that needs to change" : "Yalnız değişmesi gereken kısmı eğit"}</h2>
+      </div>
+      <p>
+        {
+          en
+            ? "Fine-tuning is one instrument in the system. Retrieval, tools and policy often solve the problem with less risk."
+            : "İnce ayar sistemdeki araçlardan yalnızca biridir. Erişim, araçlar ve politika çoğu problemi daha düşük riskle çözer."
+        }
+      </p>
+    </div>
+    <div class="decision-ladder">
+      {
+        decisionLadder.map(([number, title, description, Icon]) => (
+          <article>
+            <span class="step-number">{number}</span>
+            <Icon size={24} stroke-width={1.6} aria-hidden="true" />
+            <div><h3>{title}</h3><p>{description}</p></div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="model-section container">
+  <div class="section-head">
+    <div>
+      <p class="section-index">03 / {en ? "Unsloth local laboratory" : "Unsloth lokal laboratuvarı"}</p>
+      <h2>{en ? "From private dataset to governed adapter" : "Özel veri setinden yönetişimli adaptöre"}</h2>
+    </div>
+    <p>
+      {
+        en
+          ? "Unsloth provides local LoRA and QLoRA workflows for Qwen and other open-weight families. PULSAR wraps the training step in evidence, data rights and release control."
+          : "Unsloth; Qwen ve diğer açık-ağırlık aileleri için lokal LoRA ve QLoRA iş akışları sunar. PULSAR eğitim adımını kanıt, veri hakları ve sürüm kontrolüyle çevreler."
+      }
+    </p>
+  </div>
+  <div class="workflow-grid">
+    {
+      workflow.map(([number, title, description, Icon]) => (
+        <article>
+          <div><span>{number}</span><Icon size={23} stroke-width={1.6} aria-hidden="true" /></div>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="recipe surface">
+    <div class="recipe-copy">
+      <span>{en ? "RESEARCH STARTER" : "ARAŞTIRMA BAŞLANGICI"}</span>
+      <h3>{en ? "A minimal QLoRA experiment" : "Minimal bir QLoRA deneyi"}</h3>
+      <p>
+        {
+          en
+            ? "Use the current official Unsloth notebook, pin package and model revisions, and replace the example dataset with a rights-cleared, versioned dataset. The snippet is a starting shape—not a production recipe."
+            : "Güncel resmî Unsloth notebook'unu kullanın; paket ve model sürümlerini sabitleyin; örnek veriyi hakları temizlenmiş, sürümlenmiş veri setiyle değiştirin. Bu kod üretim tarifi değil, başlangıç biçimidir."
+        }
+      </p>
+      <div class="source-row">
+        <a href="https://unsloth.ai/docs/models/qwen3-how-to-run-and-fine-tune" rel="external">
+          {en ? "Qwen3 fine-tuning guide" : "Qwen3 ince ayar rehberi"} ↗
+        </a>
+        <a href="https://docs.unsloth.ai/basics/tutorial" rel="external">
+          {en ? "Official tutorials" : "Resmî eğitimler"} ↗
+        </a>
+      </div>
+    </div>
+    <pre tabindex="0" aria-label={en ? "Unsloth QLoRA example" : "Unsloth QLoRA örneği"}><code>{`from unsloth import FastLanguageModel
+
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name="unsloth/Qwen3-8B",
+    max_seq_length=2048,
+    load_in_4bit=True,
+)
+
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    target_modules=[
+        "q_proj", "k_proj", "v_proj", "o_proj",
+        "gate_proj", "up_proj", "down_proj",
+    ],
+)`}</code></pre>
+  </div>
+</section>
+
+<section class="model-section model-section--tint">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="section-index">04 / {en ? "Hardware envelopes" : "Donanım zarfları"}</p>
+        <h2>{en ? "Match the experiment to the memory budget" : "Deneyi bellek bütçesiyle eşleştir"}</h2>
+      </div>
+      <p>
+        {
+          en
+            ? "Vendor-reported fit figures are planning references. Measure the exact sequence length, batch, optimizer, precision and checkpoint strategy before procurement."
+            : "Üretici tarafından bildirilen sığma değerleri planlama referansıdır. Satın almadan önce gerçek dizi uzunluğu, batch, optimizer, hassasiyet ve checkpoint stratejisini ölçün."
+        }
+      </p>
+    </div>
+    <div class="hardware-grid">
+      {
+        hardware.map(([label, title, description, Icon]) => (
+          <article>
+            <Icon size={27} stroke-width={1.5} aria-hidden="true" />
+            <span>{label}</span>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </article>
+        ))
+      }
+    </div>
+    <p class="method-note">
+      {
+        en
+          ? "Memory figures attributed to Unsloth are vendor-reported examples, not PULSAR benchmark results. Recalculate infrastructure cost and fit on the date of each experiment."
+          : "Unsloth'a atfedilen bellek değerleri üretici tarafından bildirilen örneklerdir; PULSAR ölçüm sonucu değildir. Her deney tarihinde altyapı maliyetini ve sığma durumunu yeniden hesaplayın."
+      }
+      {" "}
+      <a href="https://unsloth.ai/docs/models/qwen3.5/fine-tune" rel="external">
+        {en ? "Method source" : "Yöntem kaynağı"} ↗
+      </a>
+    </p>
+  </div>
+</section>
+
+<section class="model-section container">
+  <div class="governance-board">
+    <div>
+      <p class="section-index">05 / {en ? "Release gate" : "Sürüm kapısı"}</p>
+      <h2>{en ? "A trained model is not yet a trusted model" : "Eğitilmiş model henüz güvenilir model değildir"}</h2>
+      <p>
+        {
+          en
+            ? "Open weights do not automatically mean open source, unrestricted commercial use or acceptable risk. Every candidate must pass license, data, evaluation and operational review."
+            : "Açık ağırlık; otomatik olarak açık kaynak, sınırsız ticari kullanım veya kabul edilebilir risk anlamına gelmez. Her aday lisans, veri, değerlendirme ve işletim incelemesinden geçmelidir."
+        }
+      </p>
+    </div>
+    <ul>
+      {
+        guardrails.map((item) => (
+          <li><ShieldCheck size={19} stroke-width={1.7} aria-hidden="true" /><span>{item}</span></li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .model-section {
+    padding-top: clamp(76px, 9vw, 118px);
+    padding-bottom: clamp(76px, 9vw, 118px);
+  }
+
+  .model-section--tint {
+    border-block: 1px solid var(--line);
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--cyan) 5%, transparent), transparent 42%),
+      var(--surface-muted);
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.7fr);
+    align-items: end;
+    gap: 48px;
+    margin-bottom: 42px;
+  }
+
+  .section-index,
+  .recipe-copy > span {
+    margin: 0 0 13px;
+    color: var(--cyan);
+    font-size: 0.68rem;
+    font-weight: 820;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-head h2,
+  .governance-board h2 {
+    max-width: 800px;
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(2.1rem, 4vw, 3.65rem);
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .section-head > p,
+  .governance-board > div > p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .model-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .model-card,
+  .workflow-grid article,
+  .hardware-grid article {
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--bg-elevated);
+  }
+
+  .model-card {
+    display: flex;
+    min-height: 420px;
+    padding: 23px;
+    flex-direction: column;
+  }
+
+  .model-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .status {
+    color: var(--cyan);
+    font-size: 0.62rem;
+    font-weight: 840;
+    letter-spacing: 0.1em;
+  }
+
+  .model-card__top a,
+  .source-row a,
+  .method-note a {
+    color: var(--text-muted);
+    font-size: 0.71rem;
+    font-weight: 720;
+    text-decoration: none;
+  }
+
+  .model-card__top a:hover,
+  .source-row a:hover,
+  .method-note a:hover {
+    color: var(--cyan);
+  }
+
+  .model-card h3 {
+    margin: 38px 0 6px;
+    color: var(--text);
+    font-size: 1.58rem;
+    letter-spacing: -0.035em;
+  }
+
+  .role {
+    min-height: 42px;
+    margin: 0 0 24px;
+    color: var(--text-muted);
+    font-size: 0.87rem;
+  }
+
+  dl {
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  dl div {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  dt {
+    color: var(--text-muted);
+    font-size: 0.69rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.73rem;
+    font-weight: 720;
+  }
+
+  .note {
+    margin: auto 0 0;
+    padding-top: 20px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .verification-callout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    margin-top: 18px;
+    padding: 26px;
+    border: 1px solid color-mix(in srgb, var(--amber) 48%, var(--line));
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--amber) 8%, var(--bg-elevated));
+  }
+
+  .verification-callout > svg {
+    color: var(--amber);
+  }
+
+  .verification-callout span {
+    color: var(--amber);
+    font-size: 0.65rem;
+    font-weight: 830;
+    letter-spacing: 0.1em;
+  }
+
+  .verification-callout h3,
+  .recipe h3 {
+    margin: 7px 0 8px;
+    color: var(--text);
+    font-size: 1.3rem;
+  }
+
+  .verification-callout p,
+  .recipe p,
+  .workflow-grid p,
+  .hardware-grid p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+
+  .source-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    margin-top: 16px;
+  }
+
+  .decision-ladder {
+    border-top: 1px solid var(--line);
+  }
+
+  .decision-ladder article {
+    display: grid;
+    grid-template-columns: 42px 36px 1fr;
+    align-items: start;
+    gap: 16px;
+    padding: 24px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .decision-ladder .step-number {
+    color: var(--cyan);
+    font-size: 0.7rem;
+    font-weight: 820;
+  }
+
+  .decision-ladder svg {
+    color: var(--cyan);
+  }
+
+  .decision-ladder h3,
+  .workflow-grid h3,
+  .hardware-grid h3 {
+    margin: 0 0 7px;
+    color: var(--text);
+    font-size: 1.03rem;
+  }
+
+  .decision-ladder p {
+    max-width: 850px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+
+  .workflow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .workflow-grid article {
+    min-height: 240px;
+    padding: 22px;
+  }
+
+  .workflow-grid article > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--cyan);
+  }
+
+  .workflow-grid article > div span {
+    font-size: 0.67rem;
+    font-weight: 820;
+    letter-spacing: 0.1em;
+  }
+
+  .workflow-grid h3 {
+    margin-top: 44px;
+  }
+
+  .recipe {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(440px, 1.2fr);
+    gap: 38px;
+    margin-top: 18px;
+    padding: 30px;
+  }
+
+  pre {
+    overflow-x: auto;
+    margin: 0;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #020812;
+    color: #bcefff;
+    font-size: 0.75rem;
+    line-height: 1.65;
+    tab-size: 2;
+  }
+
+  .hardware-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .hardware-grid article {
+    min-height: 290px;
+    padding: 24px;
+  }
+
+  .hardware-grid svg {
+    color: var(--cyan);
+  }
+
+  .hardware-grid span {
+    display: block;
+    margin-top: 36px;
+    color: var(--cyan);
+    font-size: 0.69rem;
+    font-weight: 820;
+    letter-spacing: 0.08em;
+  }
+
+  .hardware-grid h3 {
+    margin-top: 8px;
+  }
+
+  .method-note {
+    margin: 20px 0 0;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    line-height: 1.55;
+  }
+
+  .governance-board {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(360px, 1.15fr);
+    gap: 70px;
+    padding: clamp(30px, 5vw, 58px);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--bg-elevated);
+  }
+
+  .governance-board > div > p {
+    margin-top: 24px;
+  }
+
+  .governance-board ul {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .governance-board li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 11px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .governance-board li:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .governance-board li svg {
+    color: var(--cyan);
+  }
+
+  @media (max-width: 980px) {
+    .model-grid,
+    .workflow-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recipe,
+    .governance-board {
+      grid-template-columns: 1fr;
+    }
+
+    .hardware-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hardware-grid article {
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .section-head,
+    .model-grid,
+    .workflow-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-head {
+      align-items: start;
+      gap: 18px;
+    }
+
+    .model-card {
+      min-height: 0;
+    }
+
+    .note {
+      margin-top: 20px;
+    }
+
+    .recipe {
+      padding: 20px;
+    }
+
+    pre {
+      max-width: calc(100vw - 80px);
+      padding: 18px;
+      font-size: 0.66rem;
+    }
+
+    pre code {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .governance-board {
+      gap: 36px;
+      padding: 24px;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .verification-callout {
+      grid-template-columns: 1fr;
+    }
+
+    .decision-ladder article {
+      grid-template-columns: 34px 28px 1fr;
+      gap: 9px;
+    }
+
+    pre {
+      max-width: calc(100vw - 64px);
+    }
+  }
+</style>

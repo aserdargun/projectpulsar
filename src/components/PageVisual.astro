@@ -21,6 +21,20 @@ const cards = {
       ["03", "Hesap verebilir", "Tasarım gereği kanıt, politika ve insan yetkisi."]
     ]
   },
+  models: {
+    en: [
+      ["ADAPT", "Local candidates", "Start with a model that fits the task, evaluation and hardware."],
+      ["EVALUATE", "Frontier references", "Use large open-weight systems as measured reference points."],
+      ["GOVERN", "Controlled tuning", "Trace data, adapters, evaluations and releases end to end."],
+      ["REPEAT", "Reproducible research", "Pin artifacts, publish assumptions and preserve rollback."]
+    ],
+    tr: [
+      ["UYARLA", "Lokal adaylar", "Göreve, değerlendirmeye ve donanıma uyan modelle başla."],
+      ["ÖLÇ", "Öncü referanslar", "Büyük açık-ağırlık sistemleri ölçülmüş referans olarak kullan."],
+      ["YÖNET", "Kontrollü eğitim", "Veriyi, adaptörü, değerlendirmeyi ve sürümü uçtan uca izle."],
+      ["TEKRARLA", "Tekrarlanabilir Ar-Ge", "Artefaktları sabitle, varsayımları yayımla ve geri dönüşü koru."]
+    ]
+  },
   "use-cases": {
     en: [
       ["KNOW", "Knowledge", "Find, compare and explain trusted information."],
@@ -67,6 +81,7 @@ const cards = {
 
 const set =
   pageKey === "vision" ||
+  pageKey === "models" ||
   pageKey === "use-cases" ||
   pageKey === "trust" ||
   pageKey === "roadmap"

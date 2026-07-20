@@ -4,6 +4,7 @@ export type PageKey =
   | "vision"
   | "platform"
   | "infrastructure"
+  | "models"
   | "use-cases"
   | "trust"
   | "roadmap";
@@ -18,6 +19,7 @@ export const paths: Record<PageKey, Record<Language, string>> = {
     en: "/en/infrastructure/",
     tr: "/tr/infrastructure/"
   },
+  models: { en: "/en/models/", tr: "/tr/models/" },
   "use-cases": { en: "/en/use-cases/", tr: "/tr/use-cases/" },
   trust: { en: "/en/trust/", tr: "/tr/trust/" },
   roadmap: { en: "/en/roadmap/", tr: "/tr/roadmap/" }
@@ -70,6 +72,7 @@ export const navigation: Record<
       label: "Local runtime",
       href: paths.infrastructure.en
     },
+    { key: "models", label: "Models", href: paths.models.en },
     { key: "use-cases", label: "Use cases", href: paths["use-cases"].en },
     { key: "trust", label: "Trust", href: paths.trust.en },
     { key: "roadmap", label: "Roadmap", href: paths.roadmap.en }
@@ -82,6 +85,7 @@ export const navigation: Record<
       label: "Lokal sistem",
       href: paths.infrastructure.tr
     },
+    { key: "models", label: "Modeller", href: paths.models.tr },
     {
       key: "use-cases",
       label: "Kullanım alanları",

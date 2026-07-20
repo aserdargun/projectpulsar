@@ -54,6 +54,18 @@ The public cost model is dated 20 July 2026. It starts with a USD reference CAPE
 
 Costs are planning estimates, not supplier quotes or legal, customs, tax or investment advice. Electricity, site construction, cooling upgrades, financing and operating staff are outside the displayed landed-cost total unless stated otherwise.
 
+## Open-weight models and local fine-tuning
+
+PULSAR maintains a model portfolio rather than a universal leaderboard. Compact models are local adaptation candidates when they satisfy workload quality, language, latency, license and operating constraints. Frontier-scale open-weight models are architecture and evaluation references until their infrastructure envelope is justified.
+
+Qwen3-8B is the practical local fine-tuning baseline described on the site. The phrase “Qwen 3.8” is interpreted as the official Qwen3-8B model name. Qwen3.6-35B-A3B is treated as a medium-scale mixture-of-experts pilot candidate. Kimi-K2.6, Kimi-K2.7-Code, Qwen3.5-397B-A17B and GLM-5 are frontier-scale references rather than default workstation fine-tuning targets.
+
+As verified on 20 July 2026, Moonshot AI's official model hub and GitHub organization did not publish a Kimi K3 model card, weights, license and checksums. PULSAR keeps Kimi K3 on a watchlist until those artifacts can be independently verified.
+
+The recommended adaptation ladder is prompt and tool design, permission-aware retrieval, LoRA, QLoRA, and only then continued pre-training or full fine-tuning. Fine-tuning changes repeatable behavior; it does not replace governed retrieval for changing facts or private records.
+
+Unsloth is presented as a local LoRA and QLoRA research path. Every experiment must record dataset rights, model revision and checksums, an immutable baseline, held-out quality and safety evaluation, adapter provenance, a named human owner and a tested rollback route. Vendor-reported memory-fit figures are planning references and must be remeasured for the actual sequence length, batch, optimizer, precision and checkpoint strategy.
+
 ## Status
 
 This is a forward-looking independent R&D initiative under validation. It does not describe a completed or deployed product, guarantee performance or claim corporate affiliation.

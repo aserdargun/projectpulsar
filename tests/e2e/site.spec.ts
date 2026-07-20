@@ -6,6 +6,7 @@ const routes = [
   "/en/vision/",
   "/en/platform/",
   "/en/infrastructure/",
+  "/en/models/",
   "/en/use-cases/",
   "/en/trust/",
   "/en/roadmap/",
@@ -13,6 +14,7 @@ const routes = [
   "/tr/vision/",
   "/tr/platform/",
   "/tr/infrastructure/",
+  "/tr/models/",
   "/tr/use-cases/",
   "/tr/trust/",
   "/tr/roadmap/"
@@ -36,6 +38,20 @@ test("language switch preserves the equivalent page", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "tr");
 });
 
+test("model naming evidence and fine-tuning path are explicit", async ({
+  page
+}) => {
+  await page.goto("/en/models/");
+  await expect(page.getByRole("heading", { name: "A portfolio, not a leaderboard" })).toBeVisible();
+  await expect(page.getByText(/official Qwen catalog contains Qwen3-8B/)).toBeVisible();
+  await expect(page.getByText(/keeps Kimi K3 on a watchlist/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "From private dataset to governed adapter" })).toBeVisible();
+
+  await page.getByRole("link", { name: /Turkish/i }).click();
+  await expect(page).toHaveURL(/\/tr\/models\/$/);
+  await expect(page.getByText(/Kimi K3'ü izleme listesinde tutuyor/)).toBeVisible();
+});
+
 test("theme selection is persisted", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/en/");
@@ -49,7 +65,7 @@ test("theme selection is persisted", async ({ page }) => {
 test("primary and infrastructure pages have no serious accessibility violations", async ({
   page
 }) => {
-  for (const route of ["/en/", "/tr/infrastructure/"]) {
+  for (const route of ["/en/", "/tr/infrastructure/", "/en/models/"]) {
     await page.goto(route);
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa"])
@@ -81,32 +97,34 @@ test("Türkiye landed-cost calculator updates the dated TRY result", async ({
 
 test("mobile layout does not overflow horizontally", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto("/tr/infrastructure/");
-  const overflow = await page.evaluate(async () => {
-    const offenders = [...document.querySelectorAll<HTMLElement>("body *")]
-      .map((element) => {
-        const rect = element.getBoundingClientRect();
-        return {
-          element: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${[...element.classList].map((name) => `.${name}`).join("")}`,
-          left: Math.round(rect.left),
-          right: Math.round(rect.right),
-          width: Math.round(rect.width)
-        };
-      })
-      .filter(
-        ({ left, right, width }) =>
-          width > 0 &&
-          (left < -1 || right > document.documentElement.clientWidth + 1)
-      )
-      .slice(0, 12);
+  for (const route of ["/tr/infrastructure/", "/tr/models/"]) {
+    await page.goto(route);
+    const overflow = await page.evaluate(async () => {
+      const offenders = [...document.querySelectorAll<HTMLElement>("body *")]
+        .map((element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            element: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${[...element.classList].map((name) => `.${name}`).join("")}`,
+            left: Math.round(rect.left),
+            right: Math.round(rect.right),
+            width: Math.round(rect.width)
+          };
+        })
+        .filter(
+          ({ left, right, width }) =>
+            width > 0 &&
+            (left < -1 || right > document.documentElement.clientWidth + 1)
+        )
+        .slice(0, 12);
 
-    window.scrollTo(10_000, 0);
-    await new Promise(requestAnimationFrame);
-    const reachableScrollX = window.scrollX;
-    window.scrollTo(0, 0);
+      window.scrollTo(10_000, 0);
+      await new Promise(requestAnimationFrame);
+      const reachableScrollX = window.scrollX;
+      window.scrollTo(0, 0);
 
-    return { reachableScrollX, offenders };
-  });
-  expect(overflow.offenders).toEqual([]);
-  expect(overflow.reachableScrollX).toBe(0);
+      return { reachableScrollX, offenders };
+    });
+    expect(overflow.offenders).toEqual([]);
+    expect(overflow.reachableScrollX).toBe(0);
+  }
 });

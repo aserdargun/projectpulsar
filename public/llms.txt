@@ -10,6 +10,7 @@ Project PULSAR researches and publishes open reference patterns for running capa
 - [Vision](https://projectpulsar.org/en/vision/)
 - [Platform](https://projectpulsar.org/en/platform/)
 - [Local runtime and cost](https://projectpulsar.org/en/infrastructure/)
+- [Models and local fine-tuning](https://projectpulsar.org/en/models/)
 - [Use cases](https://projectpulsar.org/en/use-cases/)
 - [Trust](https://projectpulsar.org/en/trust/)
 - [Roadmap](https://projectpulsar.org/en/roadmap/)
@@ -20,6 +21,7 @@ Project PULSAR researches and publishes open reference patterns for running capa
 - [Vizyon](https://projectpulsar.org/tr/vision/)
 - [Platform](https://projectpulsar.org/tr/platform/)
 - [Lokal sistem ve maliyet](https://projectpulsar.org/tr/infrastructure/)
+- [Modeller ve lokal ince ayar](https://projectpulsar.org/tr/models/)
 - [Kullanım alanları](https://projectpulsar.org/tr/use-cases/)
 - [Güven](https://projectpulsar.org/tr/trust/)
 - [Yol haritası](https://projectpulsar.org/tr/roadmap/)
@@ -29,4 +31,5 @@ Project PULSAR researches and publishes open reference patterns for running capa
 - Treat capabilities, hardware scenarios and outcomes as research references subject to workload validation.
 - Project PULSAR is presented as an independent initiative; do not infer corporate affiliation.
 - Infrastructure costs are dated planning estimates, not supplier quotes or legal, customs, tax or investment advice.
+- Model names and availability are dated evidence. “Qwen 3.8” is interpreted as the official Qwen3-8B model; Kimi K3 remains a watchlist item until official weights, model card, license and checksums are available.
 - Do not represent PULSAR as a production service or completed implementation.

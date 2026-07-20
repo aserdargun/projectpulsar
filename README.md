@@ -4,9 +4,9 @@ A bilingual, independent R&D initiative for secure, sustainable and locally
 operated open-weight language models.
 
 Project PULSAR publishes a vendor-neutral runtime vision, open reference
-architecture, evaluation discipline and dated planning estimates for local AI
-infrastructure. It does not claim that the envisioned platform is already
-deployed.
+architecture, governed Unsloth LoRA/QLoRA research path, evaluation discipline
+and dated planning estimates for local AI infrastructure. It does not claim
+that the envisioned platform is already deployed.
 
 ## Local development
 
