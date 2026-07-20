@@ -1,153 +1,99 @@
-# Azure production deployment runbook
+# Zero-cost Azure deployment runbook
 
-This runbook publishes the static `dist` output from GitHub and makes
-`https://projectpulsar.org` the canonical production address.
+This runbook publishes the static `dist` output with the Azure Static Web Apps
+Free plan. It deliberately avoids Azure Front Door, Azure DNS and other
+metered Azure resources.
 
-## Resource names
+## Architecture
 
-| Resource | Name |
+| Component | Service |
 | --- | --- |
-| Resource group | `rg-projectpulsar-prod` |
-| Static Web App | `swa-projectpulsar-prod` |
-| Front Door profile | `afd-projectpulsar-prod` |
-| Front Door endpoint | `projectpulsar-prod` or the next available equivalent |
+| Source and CI/CD | GitHub Actions |
+| Hosting | Azure Static Web Apps Free |
+| TLS | Free Azure-managed certificate |
+| Primary DNS | Registrar DNS or a free DNS provider |
+| Alias-domain redirects | IHS URL forwarding |
 
-Use one production subscription and place the resource group in a region close
-to the operating team. The static content itself is globally distributed.
+The Free plan supports two custom domains per app and has no SLA. This project
+uses those slots for `projectpulsar.org` and `www.projectpulsar.org`. The
+`.org.tr` and `.com.tr` domains must use registrar-level permanent URL
+forwarding to the canonical `.org` address.
 
-## 1. Create the Static Web App
+## 1. Static Web App
 
-1. In Azure Portal, create **Static Web App**.
-2. Select the Standard hosting plan.
-3. Set deployment source to GitHub.
-4. Authorize GitHub and select:
-   - organization/account: `aserdargun`
-   - repository: `projectpulsar`
-   - branch: `main`
-5. Build configuration:
-   - preset: Custom
-   - app location: `/`
-   - API location: leave empty
-   - output location: `dist`
-6. Complete creation and wait for the generated hostname.
-7. Open **Manage deployment token**, copy the token and add it to GitHub:
-   **Settings → Secrets and variables → Actions → New repository secret**
-   with the name `AZURE_STATIC_WEB_APPS_API_TOKEN`.
-8. Run **Deploy to Azure Static Web Apps** from GitHub Actions and verify the
-   generated hostname.
+The provisioned app is:
 
-The repository already contains the deployment workflow. If Azure creates a
-second workflow, remove the generated duplicate after confirming the existing
-workflow deploys successfully.
+- resource group: `rg-projectpulsar-prod`
+- resource: `swa-projectpulsar-prod`
+- plan: Free
+- generated hostname: `green-grass-08ada9c03.7.azurestaticapps.net`
+- source: `aserdargun/projectpulsar`, branch `main`
+- app location: `/`
+- API location: empty
+- output location: `dist`
 
-## 2. Create Azure DNS zones
+GitHub Actions stores the Azure deployment token as a repository secret. Never
+commit the token or Azure credentials.
 
-Create one Azure DNS zone for each domain:
+## 2. Primary domain
 
-- `projectpulsar.org`
-- `projectpulsar.org.tr`
-- `projectpulsar.com.tr`
+Add `projectpulsar.org` and `www.projectpulsar.org` under the Static Web App's
+**Custom domains** page and use Azure-managed certificates.
 
-Copy the four authoritative Azure nameservers shown for each zone. At the
-domain registrar, replace the current nameservers with the matching Azure
-nameservers. Do not copy nameservers between zones.
+For `www`, create this record in the authoritative DNS service:
 
-Before changing nameservers, reproduce any existing mail or verification
-records in the Azure DNS zone. Start public DNS records with TTL 300.
+| Type | Name | Target | TTL |
+| --- | --- | --- | --- |
+| CNAME | `www` | `green-grass-08ada9c03.7.azurestaticapps.net` | 300 |
 
-## 3. Create Azure Front Door
+An apex domain cannot use a conventional CNAME record. If IHS DNS offers
+ALIAS/ANAME or CNAME flattening, point `projectpulsar.org` to the generated
+Azure hostname. Otherwise use a free DNS provider with apex flattening, or make
+`www.projectpulsar.org` canonical and use IHS URL forwarding for the apex.
 
-1. Create an Azure Front Door Standard profile named
-   `afd-projectpulsar-prod`.
-2. Create an endpoint and an origin group.
-3. Add the generated Static Web Apps hostname as the origin.
-4. Set origin host header to the same Static Web Apps hostname.
-5. Use HTTPS port 443 and enable certificate-name validation.
-6. Use `/` as the health probe path.
-7. Create a route that accepts HTTPS and forwards to the origin group.
+Add the TXT validation record displayed by Azure before starting certificate
+validation. Do not remove it while the custom domain is in use.
 
-## 4. Add and validate custom domains
+## 3. IHS alias-domain forwarding
 
-Add these Front Door custom domains with Azure-managed certificates:
+IHS provides an **Alan Adı URL Yönlendirme** operation in its domain control
+panel. Configure permanent, unmasked forwarding:
 
-- `projectpulsar.org`
-- `www.projectpulsar.org`
-- `projectpulsar.org.tr`
-- `www.projectpulsar.org.tr`
-- `projectpulsar.com.tr`
-- `www.projectpulsar.com.tr`
+- `projectpulsar.org.tr` → `https://projectpulsar.org`
+- `www.projectpulsar.org.tr` → `https://projectpulsar.org`
+- `projectpulsar.com.tr` → `https://projectpulsar.org`
+- `www.projectpulsar.com.tr` → `https://projectpulsar.org`
 
-For each hostname:
+Choose HTTP 301 when IHS offers the status-code option. Preserve paths and
+query strings if the forwarding feature provides that setting. Confirm with
+IHS support whether HTTPS forwarding certificates are included before relying
+on these aliases publicly.
 
-1. Add the `_dnsauth` TXT record Front Door provides.
-2. For each apex hostname, create an Azure DNS alias record pointing to the
-   Front Door endpoint.
-3. For each `www` hostname, create a CNAME pointing to the Front Door endpoint.
-4. Wait until domain validation and the managed certificate both show ready.
+## 4. Verification
 
-## 5. Route and redirect behavior
-
-Associate only `projectpulsar.org` with the origin route.
-
-Create a Front Door rule set with permanent redirects that preserve path and
-query:
-
-- HTTP requests → the same URL on HTTPS.
-- `www.projectpulsar.org` → `https://projectpulsar.org`.
-- Both `.org.tr` hosts → `https://projectpulsar.org`.
-- Both `.com.tr` hosts → `https://projectpulsar.org`.
-
-Use 301 for hostname canonicalization. Test a nested URL and query string, for
-example:
-
-```text
-https://projectpulsar.com.tr/tr/vision/?source=domain-test
-```
-
-It must become:
-
-```text
-https://projectpulsar.org/tr/vision/?source=domain-test
-```
-
-## 6. Optional origin lock
-
-`public/staticwebapp.config.json` already lists the allowed forwarded hosts.
-After Front Door exists, copy its immutable Front Door ID and add this block
-under `forwardingGateway`:
-
-```json
-"requiredHeaders": {
-  "X-Azure-FDID": "<actual-front-door-id>"
-}
-```
-
-Commit and deploy that value only after Front Door health probes and the
-primary domain work. This prevents direct access through the generated origin
-hostname. Do not add a placeholder value.
-
-## 7. Production verification
-
-Verify:
+Verify the free Azure app first:
 
 ```bash
-curl -I https://projectpulsar.org/en/
+curl -I https://green-grass-08ada9c03.7.azurestaticapps.net/
+curl -I https://green-grass-08ada9c03.7.azurestaticapps.net/en/
+```
+
+After DNS and certificates are ready:
+
+```bash
 curl -I https://projectpulsar.org/
+curl -I https://projectpulsar.org/en/
 curl -I https://www.projectpulsar.org/en/
-curl -I https://projectpulsar.org.tr/tr/
-curl -I https://projectpulsar.com.tr/tr/vision/?source=domain-test
+curl -I 'https://projectpulsar.org.tr/tr/vision/?source=domain-test'
 curl -I https://projectpulsar.org/robots.txt
 curl -I https://projectpulsar.org/sitemap-index.xml
 ```
 
 Acceptance:
 
-- The primary page returns HTTPS 200.
-- `/` redirects to `/en/`.
-- All five aliases return 301 to the canonical hostname.
-- Paths and query strings survive hostname redirects.
-- Managed certificates are valid for all six hostnames.
+- The Static Web App is on the Free plan.
+- `/` redirects to `/en/`, and localized pages return HTTPS 200.
+- Both primary hostnames have valid Azure-managed certificates.
+- Alias domains return 301 to the canonical hostname.
 - Canonical and alternate-language metadata use `projectpulsar.org`.
 - The final GitHub Actions deployment is green.
-
-After stable DNS propagation, raise public record TTL from 300 to 3600.

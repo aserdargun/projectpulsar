@@ -55,12 +55,11 @@ for known restricted references.
 
 ## Deployment
 
-Pushes to `main` run the quality workflow. The Azure deployment workflow
-becomes active when the repository secret
-`AZURE_STATIC_WEB_APPS_API_TOKEN` is configured.
+Pushes to `main` run the quality and Azure deployment workflows. The deployment
+token is stored only as a GitHub Actions repository secret.
 
 See [docs/AZURE_DEPLOYMENT.md](docs/AZURE_DEPLOYMENT.md) for the production
-resource, Front Door and DNS runbook.
+Azure Static Web Apps Free and IHS domain runbook.
 
 ## License
 
