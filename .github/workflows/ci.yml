@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate types and Astro
+        run: npm run check
+
+      - name: Validate bilingual content
+        run: npm run test:content
+
+      - name: Build production site
+        run: npm run build
+
+      - name: Scan public content
+        run: npm run test:privacy
+
+      - name: Check generated links
+        run: npm run test:links
+
+      - name: Run browser tests
+        run: npm run test:e2e
