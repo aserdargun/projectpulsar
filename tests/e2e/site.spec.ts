@@ -82,10 +82,11 @@ test("Türkiye landed-cost calculator updates the dated TRY result", async ({
 test("mobile layout does not overflow horizontally", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/tr/infrastructure/");
-  const dimensions = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-    offenders: [...document.querySelectorAll<HTMLElement>("body *")]
+  const dimensions = await page.evaluate(async () => {
+    const scrollWidth = document.documentElement.scrollWidth;
+    const clientWidth = document.documentElement.clientWidth;
+    const bodyScrollWidth = document.body.scrollWidth;
+    const offenders = [...document.querySelectorAll<HTMLElement>("body *")]
       .map((element) => {
         const rect = element.getBoundingClientRect();
         return {
@@ -100,10 +101,32 @@ test("mobile layout does not overflow horizontally", async ({ page }) => {
           width > 0 &&
           (left < -1 || right > document.documentElement.clientWidth + 1)
       )
-      .slice(0, 12)
-  }));
+      .slice(0, 12);
+
+    window.scrollTo(10_000, 0);
+    await new Promise(requestAnimationFrame);
+    const reachableScrollX = window.scrollX;
+    window.scrollTo(0, 0);
+
+    const suppressPseudo = document.createElement("style");
+    suppressPseudo.textContent =
+      "*::before,*::after{display:none!important}";
+    document.head.append(suppressPseudo);
+    await new Promise(requestAnimationFrame);
+    const scrollWidthWithoutPseudo = document.documentElement.scrollWidth;
+    suppressPseudo.remove();
+
+    return {
+      scrollWidth,
+      clientWidth,
+      bodyScrollWidth,
+      reachableScrollX,
+      scrollWidthWithoutPseudo,
+      offenders
+    };
+  });
   expect(
     dimensions.scrollWidth,
-    `Overflowing elements: ${JSON.stringify(dimensions.offenders)}`
+    `Overflow diagnostics: ${JSON.stringify(dimensions)}`
   ).toBeLessThanOrEqual(dimensions.clientWidth + 1);
 });
