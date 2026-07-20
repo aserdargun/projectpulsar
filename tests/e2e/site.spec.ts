@@ -83,7 +83,6 @@ test("mobile layout does not overflow horizontally", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/tr/infrastructure/");
   const overflow = await page.evaluate(async () => {
-    const clientWidth = document.documentElement.clientWidth;
     const offenders = [...document.querySelectorAll<HTMLElement>("body *")]
       .map((element) => {
         const rect = element.getBoundingClientRect();
