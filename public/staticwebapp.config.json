@@ -20,7 +20,11 @@
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
   },
   "forwardingGateway": {
+    "requiredHeaders": {
+      "X-Azure-FDID": "b41a7708-2151-452a-90f0-2efcdc5bf74e"
+    },
     "allowedForwardedHosts": [
+      "projectpulsar-prod-dghhcwdce7cxbvda.z03.azurefd.net",
       "projectpulsar.org",
       "www.projectpulsar.org",
       "projectpulsar.org.tr",
