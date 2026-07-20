@@ -2,6 +2,7 @@
 import BaseLayout from "./BaseLayout.astro";
 import CommandMap from "@/components/CommandMap.astro";
 import ExperienceSections from "@/components/ExperienceSections.astro";
+import InfographicGallery from "@/components/InfographicGallery.astro";
 import PageVisual from "@/components/PageVisual.astro";
 import { labels, paths, type Language, type PageKey } from "@/data/site";
 
@@ -70,6 +71,7 @@ const copy = labels[lang];
     </section>
 
     <ExperienceSections {lang} {pageKey} />
+    <InfographicGallery {lang} {pageKey} />
 
     <section class="narrative-section">
       <div class="container narrative-head">
