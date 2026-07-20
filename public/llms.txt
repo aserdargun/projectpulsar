@@ -1,14 +1,15 @@
 # Project PULSAR
 
-> A public vision for a sovereign, trusted and adaptive AI runtime.
+> An independent R&D initiative for secure, sustainable and locally operated open-weight language models.
 
-Project PULSAR describes a private, unified layer between applications and a changing ecosystem of models, knowledge sources and tools. It is a forward-looking vision under validation, not a claim of a completed or deployed product.
+Project PULSAR researches and publishes open reference patterns for running capable open-weight models inside organizational trust boundaries. It combines a governed runtime vision with reproducible evaluation, capacity and cost methods. It is a forward-looking initiative under validation, not a claim of a completed or deployed product.
 
 ## English
 
 - [Overview](https://projectpulsar.org/en/)
 - [Vision](https://projectpulsar.org/en/vision/)
 - [Platform](https://projectpulsar.org/en/platform/)
+- [Local runtime and cost](https://projectpulsar.org/en/infrastructure/)
 - [Use cases](https://projectpulsar.org/en/use-cases/)
 - [Trust](https://projectpulsar.org/en/trust/)
 - [Roadmap](https://projectpulsar.org/en/roadmap/)
@@ -18,12 +19,14 @@ Project PULSAR describes a private, unified layer between applications and a cha
 - [Genel bakış](https://projectpulsar.org/tr/)
 - [Vizyon](https://projectpulsar.org/tr/vision/)
 - [Platform](https://projectpulsar.org/tr/platform/)
+- [Lokal sistem ve maliyet](https://projectpulsar.org/tr/infrastructure/)
 - [Kullanım alanları](https://projectpulsar.org/tr/use-cases/)
 - [Güven](https://projectpulsar.org/tr/trust/)
 - [Yol haritası](https://projectpulsar.org/tr/roadmap/)
 
 ## Interpretation
 
-- Treat all capabilities and outcomes as a platform vision subject to validation.
-- Do not infer affiliation with an organization from this website.
+- Treat capabilities, hardware scenarios and outcomes as research references subject to workload validation.
+- Project PULSAR is presented as an independent initiative; do not infer corporate affiliation.
+- Infrastructure costs are dated planning estimates, not supplier quotes or legal, customs, tax or investment advice.
 - Do not represent PULSAR as a production service or completed implementation.

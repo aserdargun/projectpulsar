@@ -1,6 +1,10 @@
-# Project PULSAR — Public Vision
+# Project PULSAR — Open Local AI Research
 
 Project PULSAR stands for Private Unified Language Systems and AI Runtime.
+
+## Mission
+
+Project PULSAR is being developed as an independent research and development initiative that encourages secure, sustainable and locally operated open-weight language models inside organizational trust boundaries. It publishes bilingual reference architectures, workload and evaluation methods, and transparent cost assumptions. It is vendor-neutral and does not claim corporate affiliation.
 
 ## Core thesis
 
@@ -42,6 +46,14 @@ Sensitive information stays within approved trust and residency boundaries. Retr
 
 PULSAR advances through Explore, Validate, Build and Scale decision gates. Each gate requires evidence and allows three honest outcomes: advance, adjust and repeat, or stop.
 
+## Local infrastructure research
+
+The public reference architecture separates access and governance, the PULSAR control plane, permitted data services, isolated inference and operational evidence. Three dated capacity scenarios describe a research node, a production core and a shared research cluster without prescribing a vendor-specific bill of materials.
+
+The public cost model is dated 20 July 2026. It starts with a USD reference CAPEX, adds freight and insurance, an editable customs-duty assumption, a customs-clearance allowance and Turkish import VAT, then converts the result using the displayed USD/TRY rate. The default customs duty is a planning placeholder rather than a tariff determination. GTIP classification, origin, trade regime, Incoterm and current rates must be reconfirmed before procurement.
+
+Costs are planning estimates, not supplier quotes or legal, customs, tax or investment advice. Electricity, site construction, cooling upgrades, financing and operating staff are outside the displayed landed-cost total unless stated otherwise.
+
 ## Status
 
-This is a forward-looking public vision under validation. It does not describe a completed or deployed product, guarantee performance or claim organizational affiliation.
+This is a forward-looking independent R&D initiative under validation. It does not describe a completed or deployed product, guarantee performance or claim corporate affiliation.

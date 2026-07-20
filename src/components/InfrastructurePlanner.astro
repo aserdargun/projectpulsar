@@ -1,0 +1,1074 @@
+---
+import {
+  CalendarClock,
+  Calculator,
+  Database,
+  Gauge,
+  HardDrive,
+  Leaf,
+  Network,
+  Router,
+  Server,
+  ShieldCheck
+} from "@lucide/astro";
+import type { Language } from "@/data/site";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const en = lang === "en";
+const asOfIso = "2026-07-20";
+const asOf = en ? "20 July 2026" : "20 Temmuz 2026";
+const usdTry = 47.1787;
+
+const assumptions = {
+  freight: 3,
+  duty: 0,
+  clearance: 1.5,
+  vat: 20
+};
+
+const scenarios = en
+  ? [
+      {
+        id: "lab",
+        code: "R01",
+        name: "Research node",
+        intent: "Evaluation, retrieval, fine-tuning experiments and controlled team use",
+        gpu: "2 × 96 GB server/workstation accelerators",
+        memory: "192 GB accelerator · 512 GB ECC system",
+        storage: "8 TB NVMe · protected model registry",
+        network: "25–100 GbE · isolated management",
+        power: "1.5–2.0 kW design envelope",
+        fit: "Quantized 70B-class models, smaller dense models, embeddings and rerankers",
+        cost: 50000
+      },
+      {
+        id: "production",
+        code: "R02",
+        name: "Production core",
+        intent: "Shared inference, higher concurrency, governed tools and service resilience",
+        gpu: "4 × 96 GB server accelerators",
+        memory: "384 GB accelerator · 1 TB ECC system",
+        storage: "15 TB NVMe · replicated artifact store",
+        network: "Dual 100 GbE · redundant service path",
+        power: "3.5–4.5 kW design envelope",
+        fit: "70B-class models at higher concurrency, moderate MoE paths and parallel services",
+        cost: 110000,
+        recommended: true
+      },
+      {
+        id: "scale",
+        code: "R03",
+        name: "Shared research cluster",
+        intent: "Multiple model services, large-context research and capacity expansion",
+        gpu: "8 × 96 GB server accelerators",
+        memory: "768 GB accelerator · 2 TB ECC system",
+        storage: "30 TB NVMe · durable shared object storage",
+        network: "Dual 100/200 GbE · separate storage fabric",
+        power: "7–9 kW design envelope",
+        fit: "Larger MoE experiments, multiple resident models and bounded multi-team service",
+        cost: 220000
+      }
+    ]
+  : [
+      {
+        id: "lab",
+        code: "R01",
+        name: "Araştırma sunucusu",
+        intent: "Değerlendirme, bilgi erişimi, ince ayar deneyleri ve kontrollü ekip kullanımı",
+        gpu: "2 × 96 GB sunucu/iş istasyonu hızlandırıcısı",
+        memory: "192 GB hızlandırıcı · 512 GB ECC sistem",
+        storage: "8 TB NVMe · korumalı model kayıt alanı",
+        network: "25–100 GbE · izole yönetim ağı",
+        power: "1,5–2,0 kW tasarım zarfı",
+        fit: "Nicemlenmiş 70B sınıfı modeller, daha küçük yoğun modeller, embedding ve reranker",
+        cost: 50000
+      },
+      {
+        id: "production",
+        code: "R02",
+        name: "Üretim çekirdeği",
+        intent: "Paylaşımlı çıkarım, yüksek eşzamanlılık, yönetişimli araçlar ve hizmet dayanıklılığı",
+        gpu: "4 × 96 GB sunucu hızlandırıcısı",
+        memory: "384 GB hızlandırıcı · 1 TB ECC sistem",
+        storage: "15 TB NVMe · çoğaltılmış model deposu",
+        network: "Çift 100 GbE · yedekli hizmet yolu",
+        power: "3,5–4,5 kW tasarım zarfı",
+        fit: "Yüksek eşzamanlı 70B sınıfı modeller, orta ölçekli MoE yolları ve paralel servisler",
+        cost: 110000,
+        recommended: true
+      },
+      {
+        id: "scale",
+        code: "R03",
+        name: "Paylaşımlı araştırma kümesi",
+        intent: "Birden fazla model servisi, geniş bağlam araştırması ve kapasite büyütme",
+        gpu: "8 × 96 GB sunucu hızlandırıcısı",
+        memory: "768 GB hızlandırıcı · 2 TB ECC sistem",
+        storage: "30 TB NVMe · dayanıklı paylaşımlı nesne depolama",
+        network: "Çift 100/200 GbE · ayrı depolama ağı",
+        power: "7–9 kW tasarım zarfı",
+        fit: "Daha büyük MoE deneyleri, eşzamanlı modeller ve sınırlı çok ekipli hizmet",
+        cost: 220000
+      }
+    ];
+
+const architecture = en
+  ? [
+      ["01", "Access & governance", "Identity, purpose, policy, quota and approval enter before model execution.", ShieldCheck],
+      ["02", "PULSAR control plane", "Gateway, router, model registry, evaluation gates and release policy stay separate from models.", Router],
+      ["03", "Permitted data plane", "Retrieval, object storage and tools inherit source authority and remain network-bounded.", Database],
+      ["04", "Inference plane", "Open-weight models run in isolated pools with quantization, batching and task-aware routing.", Server],
+      ["05", "Evidence & operations", "Tracing, quality evaluation, power telemetry and human review shape every release.", Gauge]
+    ]
+  : [
+      ["01", "Erişim ve yönetişim", "Kimlik, amaç, politika, kota ve onay model çalışmadan önce akışa girer.", ShieldCheck],
+      ["02", "PULSAR kontrol düzlemi", "Gateway, router, model kaydı, değerlendirme kapıları ve sürüm politikası modellerden ayrılır.", Router],
+      ["03", "İzinli veri düzlemi", "Bilgi erişimi, nesne depolama ve araçlar kaynak yetkisini devralır; ağ sınırında kalır.", Database],
+      ["04", "Çıkarım düzlemi", "Açık-ağırlık modeller; izolasyon, nicemleme, batching ve görev odaklı yönlendirmeyle çalışır.", Server],
+      ["05", "Kanıt ve işletme", "İz kaydı, kalite değerlendirmesi, enerji telemetrisi ve insan incelemesi her sürümü şekillendirir.", Gauge]
+    ];
+
+const formatUsd = (value: number) =>
+  new Intl.NumberFormat(en ? "en-US" : "tr-TR", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0
+  }).format(value);
+
+const formatTry = (value: number) =>
+  new Intl.NumberFormat(en ? "en-US" : "tr-TR", {
+    style: "currency",
+    currency: "TRY",
+    maximumFractionDigits: 0
+  }).format(value);
+
+const landed = (base: number) => {
+  const cif = base * (1 + assumptions.freight / 100);
+  const duty = cif * (assumptions.duty / 100);
+  const clearance = cif * (assumptions.clearance / 100);
+  const importVat = (cif + duty) * (assumptions.vat / 100);
+  const net = cif + duty + clearance;
+  const gross = net + importVat;
+  return { cif, duty, clearance, importVat, net, gross };
+};
+
+const initial = landed(scenarios[1].cost);
+---
+
+{
+  lang && (
+    <div class="infrastructure-planner">
+      <section class="architecture-section container" aria-labelledby="reference-architecture">
+        <div class="section-head">
+          <div>
+            <p class="section-index">{en ? "01 / Reference architecture" : "01 / Referans mimari"}</p>
+            <h2 id="reference-architecture">
+              {en ? "Local by default. Open at the model boundary." : "Varsayılan olarak lokal. Model sınırında açık."}
+            </h2>
+          </div>
+          <p>
+            {en
+              ? "The durable system is not the GPU server alone. It is the governed path around models, data and human authority."
+              : "Kalıcı sistem yalnız GPU sunucusu değildir. Modellerin, verinin ve insan yetkisinin çevresindeki yönetişimli yoldur."}
+          </p>
+        </div>
+
+        <div class="architecture-board">
+          <div class="architecture-flow">
+            {architecture.map(([number, title, description, Icon]) => (
+              <article>
+                <span>{number}</span>
+                <Icon size={23} stroke-width={1.55} aria-hidden="true" />
+                <div>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+          <aside class="design-rails">
+            <span>{en ? "NON-NEGOTIABLE RAILS" : "VAZGEÇİLMEZ SINIRLAR"}</span>
+            <ul>
+              <li>{en ? "No direct user-to-model path" : "Doğrudan kullanıcı-model yolu yok"}</li>
+              <li>{en ? "No unrestricted model egress" : "Sınırsız model dış ağ erişimi yok"}</li>
+              <li>{en ? "Signed and scanned model artifacts" : "İmzalı ve taranmış model dosyaları"}</li>
+              <li>{en ? "Read-only tools before write authority" : "Yazma yetkisinden önce salt okunur araçlar"}</li>
+              <li>{en ? "Evaluation gate before every release" : "Her sürümden önce değerlendirme kapısı"}</li>
+              <li>{en ? "Human authority for consequential action" : "Sonuç doğuran eylemde insan yetkisi"}</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="scenario-section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="section-index">{en ? "02 / Capacity scenarios" : "02 / Kapasite senaryoları"}</p>
+              <h2>{en ? "Start with a workload envelope—not a shopping list" : "Alışveriş listesiyle değil, iş yükü zarfıyla başla"}</h2>
+            </div>
+            <p>
+              {en
+                ? "Memory fit depends on model architecture, precision, context length, concurrency and serving software. Benchmark before purchase."
+                : "Bellek uyumu; model mimarisi, hassasiyet, bağlam uzunluğu, eşzamanlılık ve servis yazılımına bağlıdır. Satın almadan önce benchmark yapın."}
+            </p>
+          </div>
+
+          <div class="scenario-grid">
+            {scenarios.map((scenario) => (
+              <article class:list={["scenario-card", { "scenario-card--recommended": scenario.recommended }]}>
+                <div class="scenario-top">
+                  <span>{scenario.code}</span>
+                  {scenario.recommended && <strong>{en ? "REFERENCE START" : "REFERANS BAŞLANGIÇ"}</strong>}
+                </div>
+                <h3>{scenario.name}</h3>
+                <p class="scenario-intent">{scenario.intent}</p>
+                <dl>
+                  <div><dt>{en ? "Compute" : "Hesaplama"}</dt><dd>{scenario.gpu}</dd></div>
+                  <div><dt>{en ? "Memory" : "Bellek"}</dt><dd>{scenario.memory}</dd></div>
+                  <div><dt>{en ? "Storage" : "Depolama"}</dt><dd>{scenario.storage}</dd></div>
+                  <div><dt>{en ? "Network" : "Ağ"}</dt><dd>{scenario.network}</dd></div>
+                  <div><dt>{en ? "Facility" : "Tesis"}</dt><dd>{scenario.power}</dd></div>
+                </dl>
+                <div class="model-fit"><HardDrive size={17} aria-hidden="true" /><span>{scenario.fit}</span></div>
+                <div class="scenario-cost">
+                  <span>{en ? "REFERENCE CAPEX" : "REFERANS CAPEX"}</span>
+                  <strong>{formatUsd(scenario.cost)}</strong>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div class="capacity-note">
+            <Network size={20} aria-hidden="true" />
+            <p>
+              {en
+                ? "Reference prices include accelerator hardware, host platform, ECC memory, NVMe storage, network/security components and an integration contingency. They are planning estimates—not vendor quotes."
+                : "Referans fiyatlar; hızlandırıcı donanımı, sunucu platformu, ECC bellek, NVMe depolama, ağ/güvenlik bileşenleri ve entegrasyon payını içerir. Bunlar tedarikçi teklifi değil, planlama tahminidir."}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="cost-section container" aria-labelledby="cost-calculator">
+        <div class="section-head">
+          <div>
+            <p class="section-index">{en ? "03 / Türkiye landed cost" : "03 / Türkiye ithalat maliyeti"}</p>
+            <h2 id="cost-calculator">{en ? "Make the assumptions visible" : "Varsayımları görünür kıl"}</h2>
+          </div>
+          <div class="date-stamp">
+            <CalendarClock size={20} aria-hidden="true" />
+            <span>
+              {en ? "Calculation date" : "Hesap tarihi"}
+              <strong><time datetime={asOfIso}>{asOf}</time></strong>
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="calculator-board"
+          data-cost-calculator
+          data-lang={lang}
+          data-default-rate={usdTry}
+        >
+          <form class="calculator-inputs">
+            <div class="calculator-title">
+              <Calculator size={24} aria-hidden="true" />
+              <div>
+                <h3>{en ? "Planning calculator" : "Planlama hesaplayıcısı"}</h3>
+                <p>{en ? "Edit every rate before a procurement decision." : "Tedarik kararından önce her oranı güncelleyin."}</p>
+              </div>
+            </div>
+
+            <label>
+              <span>{en ? "Reference system" : "Referans sistem"}</span>
+              <select data-field="scenario">
+                {scenarios.map((scenario) => (
+                  <option value={scenario.cost} selected={scenario.recommended}>
+                    {scenario.name} — {formatUsd(scenario.cost)}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div class="field-grid">
+              <label>
+                <span>USD/TRY</span>
+                <input data-field="fx" type="number" min="0" step="0.0001" value={usdTry} />
+              </label>
+              <label>
+                <span>{en ? "Freight & insurance" : "Navlun ve sigorta"} (%)</span>
+                <input data-field="freight" type="number" min="0" step="0.1" value={assumptions.freight} />
+              </label>
+              <label>
+                <span>{en ? "Customs duty" : "Gümrük vergisi"} (%)</span>
+                <input data-field="duty" type="number" min="0" step="0.1" value={assumptions.duty} />
+              </label>
+              <label>
+                <span>{en ? "Clearance allowance" : "Gümrükleme payı"} (%)</span>
+                <input data-field="clearance" type="number" min="0" step="0.1" value={assumptions.clearance} />
+              </label>
+              <label>
+                <span>{en ? "Import VAT" : "İthalat KDV"} (%)</span>
+                <input data-field="vat" type="number" min="0" step="0.1" value={assumptions.vat} />
+              </label>
+            </div>
+          </form>
+
+          <div class="calculator-results" aria-live="polite">
+            <div><span>{en ? "Base system" : "Sistem bedeli"}</span><strong data-result="base">{formatUsd(scenarios[1].cost)}</strong></div>
+            <div><span>CIF</span><strong data-result="cif">{formatUsd(initial.cif)}</strong></div>
+            <div><span>{en ? "Customs duty" : "Gümrük vergisi"}</span><strong data-result="duty">{formatUsd(initial.duty)}</strong></div>
+            <div><span>{en ? "Import VAT" : "İthalat KDV"}</span><strong data-result="vat">{formatUsd(initial.importVat)}</strong></div>
+            <div class="result-major"><span>{en ? "Net landed cost, VAT excluded" : "KDV hariç net ithalat maliyeti"}</span><strong data-result="net-usd">{formatUsd(initial.net)}</strong><small data-result="net-try">{formatTry(initial.net * usdTry)}</small></div>
+            <div class="result-major result-major--gross"><span>{en ? "Gross cash outlay, VAT included" : "KDV dahil brüt nakit çıkışı"}</span><strong data-result="gross-usd">{formatUsd(initial.gross)}</strong><small data-result="gross-try">{formatTry(initial.gross * usdTry)}</small></div>
+          </div>
+        </div>
+
+        <div class="assumption-grid">
+          <article>
+            <span>{en ? "CUSTOMS" : "GÜMRÜK"}</span>
+            <h3>{en ? "0% is a planning default—not a tariff ruling" : "%0 bir planlama varsayımıdır; tarife kararı değildir"}</h3>
+            <p>
+              {en
+                ? "Confirm GTIP classification, origin, trade regime, Incoterm and any additional duty with a licensed customs broker before ordering."
+                : "Siparişten önce GTİP sınıflandırmasını, menşei, ticaret rejimini, Incoterm'ü ve olası ilave vergiyi yetkili gümrük müşaviriyle doğrulayın."}
+            </p>
+          </article>
+          <article>
+            <span>{en ? "VAT" : "KDV"}</span>
+            <h3>{en ? "Cash outlay and economic cost are different views" : "Nakit çıkışı ile ekonomik maliyet farklı görünümlerdir"}</h3>
+            <p>
+              {en
+                ? "Import VAT is shown in gross cash outlay. Whether it is recoverable depends on the taxpayer and use; obtain tax advice."
+                : "İthalat KDV'si brüt nakit çıkışında gösterilir. İndirilebilirliği mükellef ve kullanım durumuna bağlıdır; vergi danışmanlığı alın."}
+            </p>
+          </article>
+          <article>
+            <span>{en ? "REFRESH" : "GÜNCELLEME"}</span>
+            <h3>{en ? "Update the calculation date at least monthly" : "Hesap tarihini en az ayda bir güncelleyin"}</h3>
+            <p>
+              {en
+                ? "Refresh accelerator prices, supplier quote, TCMB selling rate, freight, tariff and VAT—and always recalculate on the customs declaration date."
+                : "Hızlandırıcı fiyatını, tedarikçi teklifini, TCMB satış kurunu, navlunu, tarifeyi ve KDV'yi yenileyin; gümrük beyannamesi tarihinde mutlaka yeniden hesaplayın."}
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="sustainability-section">
+        <div class="container sustainability-board">
+          <div>
+            <p class="section-index">{en ? "04 / Sustainable operation" : "04 / Sürdürülebilir işletme"}</p>
+            <h2>{en ? "Useful intelligence per unit of energy" : "Enerji başına faydalı zekâ"}</h2>
+            <p>
+              {en
+                ? "Sustainability begins with routing and measurement—not a larger server."
+                : "Sürdürülebilirlik daha büyük bir sunucuyla değil, yönlendirme ve ölçümle başlar."}
+            </p>
+          </div>
+          <div class="sustainability-grid">
+            <article><Leaf size={22} aria-hidden="true" /><h3>{en ? "Right-size models" : "Modeli doğru boyutlandır"}</h3><p>{en ? "Prefer the smallest path that meets the evaluated quality threshold." : "Değerlendirilmiş kalite eşiğini karşılayan en küçük yolu tercih et."}</p></article>
+            <article><Gauge size={22} aria-hidden="true" /><h3>{en ? "Measure real work" : "Gerçek işi ölç"}</h3><p>{en ? "Track energy, utilization, queue time and accepted output by workload." : "Enerji, kullanım, kuyruk süresi ve kabul edilen çıktıyı iş yükü bazında izle."}</p></article>
+            <article><Server size={22} aria-hidden="true" /><h3>{en ? "Share capacity safely" : "Kapasiteyi güvenle paylaş"}</h3><p>{en ? "Use batching, quotas and isolated pools before adding hardware." : "Donanım eklemeden önce batching, kota ve izole havuzlar kullan."}</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="source-section container">
+        <p class="section-index">{en ? "Sources & method" : "Kaynaklar ve yöntem"}</p>
+        <div class="source-grid">
+          <a href="https://www.nvidia.com/en-us/data-center/rtx-pro-6000-blackwell-server-edition/" rel="external">
+            <strong>{en ? "Accelerator specification" : "Hızlandırıcı teknik özellikleri"}</strong>
+            <span>NVIDIA · 96 GB server edition</span>
+          </a>
+          <a href="https://marketplace.nvidia.com/en-us/enterprise/laptops-workstations/nvidia-rtx-pro-6000-blackwell-workstation-edition/" rel="external">
+            <strong>{en ? "Public price proxy" : "Kamusal fiyat göstergesi"}</strong>
+            <span>{en ? "NVIDIA workstation edition" : "NVIDIA iş istasyonu sürümü"} · {formatUsd(13250)}</span>
+          </a>
+          <a href="https://docs.nvidia.com/enterprise-reference-architectures/rtx-pro-ai-factory/latest/components.html" rel="external">
+            <strong>{en ? "Server architecture envelope" : "Sunucu mimarisi zarfı"}</strong>
+            <span>NVIDIA · up to 8 × 96 GB</span>
+          </a>
+          <a href="https://www.tcmb.gov.tr/kurlar/202607/20072026.xml" rel="external">
+            <strong>{en ? "USD/TRY selling rate" : "USD/TRY döviz satış kuru"}</strong>
+            <span>TCMB · {usdTry} · {asOf}</span>
+          </a>
+          <a href="https://ticaret.gov.tr/gumruk-islemleri/sikca-sorulan-sorular/ticari/gumruk-kiymeti" rel="external">
+            <strong>{en ? "Customs value and FX method" : "Gümrük kıymeti ve kur yöntemi"}</strong>
+            <span>{en ? "Ministry of Trade" : "T.C. Ticaret Bakanlığı"}</span>
+          </a>
+          <a href="https://cdn.gib.gov.tr/api/gibportal-file/file/getFileResources?objectKey=arsiv%2Fyardim-kaynaklar%2Fyararli-bilgiler%2Fkdv-oranlari.pdf" rel="external">
+            <strong>{en ? "General VAT rate" : "Genel KDV oranı"}</strong>
+            <span>{en ? "Revenue Administration · 20%" : "Gelir İdaresi Başkanlığı · %20"}</span>
+          </a>
+        </div>
+        <p class="method-note">
+          {en
+            ? "Method: reference CapEx × freight/insurance = CIF; customs duty is applied to CIF; import VAT is applied to CIF plus duty; the clearance allowance is added separately. This simplified public model excludes financing, KKDF, local reseller margin, building works, electricity and recoverability timing."
+            : "Yöntem: referans CapEx × navlun/sigorta = CIF; gümrük vergisi CIF üzerine, ithalat KDV'si CIF + vergi üzerine uygulanır; gümrükleme payı ayrıca eklenir. Bu sadeleştirilmiş kamusal model; finansman, KKDF, yerel satıcı marjı, bina işleri, elektrik ve KDV indirim zamanlamasını kapsamaz."}
+        </p>
+      </section>
+    </div>
+  )
+}
+
+<script>
+  const calculators = document.querySelectorAll<HTMLElement>("[data-cost-calculator]");
+
+  const currency = (locale: string, code: "USD" | "TRY", value: number) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: code,
+      maximumFractionDigits: 0
+    }).format(value);
+
+  calculators.forEach((calculator) => {
+    const locale = calculator.dataset.lang === "tr" ? "tr-TR" : "en-US";
+    const field = (name: string) =>
+      calculator.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-field="${name}"]`);
+    const result = (name: string) =>
+      calculator.querySelector<HTMLElement>(`[data-result="${name}"]`);
+
+    const update = () => {
+      const base = Number(field("scenario")?.value ?? 0);
+      const fx = Number(field("fx")?.value ?? 0);
+      const freightRate = Number(field("freight")?.value ?? 0) / 100;
+      const dutyRate = Number(field("duty")?.value ?? 0) / 100;
+      const clearanceRate = Number(field("clearance")?.value ?? 0) / 100;
+      const vatRate = Number(field("vat")?.value ?? 0) / 100;
+
+      const cif = base * (1 + freightRate);
+      const duty = cif * dutyRate;
+      const clearance = cif * clearanceRate;
+      const vat = (cif + duty) * vatRate;
+      const net = cif + duty + clearance;
+      const gross = net + vat;
+
+      const values: Record<string, string> = {
+        base: currency(locale, "USD", base),
+        cif: currency(locale, "USD", cif),
+        duty: currency(locale, "USD", duty),
+        vat: currency(locale, "USD", vat),
+        "net-usd": currency(locale, "USD", net),
+        "gross-usd": currency(locale, "USD", gross),
+        "net-try": currency(locale, "TRY", net * fx),
+        "gross-try": currency(locale, "TRY", gross * fx)
+      };
+
+      Object.entries(values).forEach(([key, value]) => {
+        const node = result(key);
+        if (node) node.textContent = value;
+      });
+    };
+
+    calculator.querySelectorAll("input, select").forEach((input) => {
+      input.addEventListener("input", update);
+      input.addEventListener("change", update);
+    });
+  });
+</script>
+
+<style>
+  .infrastructure-planner {
+    --infra-radius: 10px;
+  }
+
+  .architecture-section,
+  .scenario-section,
+  .cost-section,
+  .sustainability-section,
+  .source-section {
+    padding-block: clamp(72px, 9vw, 118px);
+  }
+
+  .scenario-section,
+  .sustainability-section {
+    border-block: 1px solid var(--line);
+    background:
+      linear-gradient(90deg, transparent, color-mix(in srgb, var(--cyan) 5%, transparent), transparent),
+      color-mix(in srgb, var(--surface-muted) 54%, transparent);
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+    align-items: end;
+    gap: 50px;
+    margin-bottom: 38px;
+  }
+
+  .section-index {
+    margin: 0 0 13px;
+    color: var(--cyan);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .section-head h2,
+  .sustainability-board h2 {
+    max-width: 860px;
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(2rem, 4vw, 3.8rem);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .section-head > p,
+  .sustainability-board > div > p:last-child {
+    max-width: 520px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .architecture-board {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+    gap: 14px;
+  }
+
+  .architecture-flow {
+    display: grid;
+    border: 1px solid var(--line);
+    border-radius: var(--infra-radius);
+    overflow: hidden;
+  }
+
+  .architecture-flow article {
+    display: grid;
+    grid-template-columns: 42px 32px 1fr;
+    align-items: center;
+    gap: 14px;
+    min-height: 112px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-elevated);
+  }
+
+  .architecture-flow article:last-child {
+    border-bottom: 0;
+  }
+
+  .architecture-flow article > span {
+    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+  }
+
+  .architecture-flow svg {
+    color: var(--cyan);
+  }
+
+  .architecture-flow h3,
+  .scenario-card h3,
+  .assumption-grid h3,
+  .sustainability-grid h3 {
+    margin: 0 0 6px;
+    color: var(--text);
+    font-size: 1rem;
+  }
+
+  .architecture-flow p,
+  .scenario-card p,
+  .assumption-grid p,
+  .sustainability-grid p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.79rem;
+    line-height: 1.5;
+  }
+
+  .design-rails {
+    padding: 25px;
+    border: 1px solid color-mix(in srgb, var(--amber) 42%, var(--line));
+    border-radius: var(--infra-radius);
+    background:
+      radial-gradient(circle at 50% 0, color-mix(in srgb, var(--amber) 9%, transparent), transparent 55%),
+      var(--bg-elevated);
+  }
+
+  .design-rails > span,
+  .scenario-top > span,
+  .scenario-top strong,
+  .scenario-cost span,
+  .assumption-grid article > span {
+    color: var(--amber);
+    font-size: 0.64rem;
+    font-weight: 820;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .design-rails ul {
+    display: grid;
+    gap: 0;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .design-rails li {
+    position: relative;
+    padding: 14px 0 14px 20px;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    font-size: 0.78rem;
+  }
+
+  .design-rails li::before {
+    position: absolute;
+    top: 21px;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    content: "";
+    box-shadow: 0 0 9px var(--amber);
+  }
+
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .scenario-card {
+    position: relative;
+    display: flex;
+    min-height: 640px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--cyan);
+    border-radius: var(--infra-radius);
+    background: var(--bg-elevated);
+    flex-direction: column;
+  }
+
+  .scenario-card--recommended {
+    border-color: color-mix(in srgb, var(--amber) 55%, var(--line));
+    border-top-color: var(--amber);
+    box-shadow: 0 20px 55px color-mix(in srgb, var(--amber) 9%, transparent);
+  }
+
+  .scenario-top {
+    display: flex;
+    min-height: 25px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .scenario-top > span {
+    color: var(--cyan);
+  }
+
+  .scenario-card h3 {
+    margin-top: 24px;
+    font-size: 1.35rem;
+  }
+
+  .scenario-intent {
+    min-height: 76px;
+  }
+
+  .scenario-card dl {
+    display: grid;
+    gap: 0;
+    margin: 24px 0 0;
+  }
+
+  .scenario-card dl div {
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .scenario-card dt {
+    margin-bottom: 4px;
+    color: var(--cyan);
+    font-size: 0.61rem;
+    font-weight: 780;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .scenario-card dd {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+
+  .model-fit {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    line-height: 1.45;
+  }
+
+  .model-fit svg {
+    flex: none;
+    color: var(--violet);
+  }
+
+  .scenario-cost {
+    display: grid;
+    gap: 5px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+
+  .scenario-cost span {
+    color: var(--text-muted);
+  }
+
+  .scenario-cost strong {
+    color: var(--text);
+    font-size: 1.9rem;
+    letter-spacing: -0.04em;
+  }
+
+  .capacity-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--infra-radius);
+    background: var(--bg-elevated);
+  }
+
+  .capacity-note svg {
+    flex: none;
+    color: var(--cyan);
+  }
+
+  .capacity-note p,
+  .method-note {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    line-height: 1.55;
+  }
+
+  .date-stamp {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: 12px;
+    padding: 11px 14px;
+    border: 1px solid color-mix(in srgb, var(--amber) 50%, var(--line));
+    border-radius: 8px;
+    color: var(--amber);
+  }
+
+  .date-stamp span {
+    display: grid;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .date-stamp strong {
+    margin-top: 2px;
+    color: var(--text);
+    font-size: 0.78rem;
+  }
+
+  .calculator-board {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    border: 1px solid var(--line);
+    border-radius: var(--infra-radius);
+    overflow: hidden;
+    background: var(--bg-elevated);
+  }
+
+  .calculator-inputs {
+    padding: 28px;
+    border-right: 1px solid var(--line);
+  }
+
+  .calculator-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .calculator-title svg {
+    color: var(--cyan);
+  }
+
+  .calculator-title h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.05rem;
+  }
+
+  .calculator-title p {
+    margin: 3px 0 0;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+  }
+
+  .calculator-inputs label {
+    display: grid;
+    gap: 7px;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 720;
+  }
+
+  .calculator-inputs input,
+  .calculator-inputs select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .calculator-results {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line);
+  }
+
+  .calculator-results > div {
+    display: grid;
+    min-height: 96px;
+    padding: 19px;
+    background: var(--surface);
+  }
+
+  .calculator-results span {
+    color: var(--text-muted);
+    font-size: 0.64rem;
+    font-weight: 720;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .calculator-results strong {
+    align-self: end;
+    color: var(--text);
+    font-size: 1.2rem;
+  }
+
+  .calculator-results .result-major {
+    min-height: 135px;
+    background:
+      radial-gradient(circle at 0 100%, var(--glow), transparent 60%),
+      var(--surface);
+  }
+
+  .calculator-results .result-major--gross {
+    background:
+      radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--amber) 12%, transparent), transparent 65%),
+      var(--surface);
+  }
+
+  .result-major strong {
+    font-size: clamp(1.65rem, 3vw, 2.5rem);
+    letter-spacing: -0.04em;
+  }
+
+  .result-major small {
+    color: var(--cyan);
+    font-size: 0.9rem;
+    font-weight: 740;
+  }
+
+  .result-major--gross small {
+    color: var(--amber);
+  }
+
+  .assumption-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .assumption-grid article {
+    min-height: 225px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--infra-radius);
+    background: var(--bg-elevated);
+  }
+
+  .assumption-grid h3 {
+    margin-top: 24px;
+    font-size: 1rem;
+  }
+
+  .sustainability-board {
+    display: grid;
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    align-items: center;
+    gap: clamp(45px, 8vw, 100px);
+  }
+
+  .sustainability-board > div > p:last-child {
+    margin-top: 22px;
+  }
+
+  .sustainability-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .sustainability-grid article {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    min-height: 105px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+  }
+
+  .sustainability-grid svg {
+    grid-row: 1 / span 2;
+    color: var(--teal);
+  }
+
+  .source-section {
+    border-top: 1px solid var(--line);
+  }
+
+  .source-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+
+  .source-grid a {
+    display: grid;
+    min-height: 115px;
+    align-content: center;
+    gap: 5px;
+    padding: 18px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .source-grid a:hover {
+    background: var(--surface-muted);
+  }
+
+  .source-grid strong {
+    font-size: 0.78rem;
+  }
+
+  .source-grid span {
+    color: var(--text-muted);
+    font-size: 0.68rem;
+  }
+
+  .method-note {
+    margin-top: 22px;
+  }
+
+  @media (max-width: 980px) {
+    .scenario-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .scenario-card {
+      min-height: 0;
+    }
+
+    .scenario-intent {
+      min-height: 0;
+    }
+
+    .scenario-cost {
+      margin-top: 28px;
+    }
+
+    .architecture-board,
+    .calculator-board,
+    .sustainability-board {
+      grid-template-columns: 1fr;
+    }
+
+    .calculator-inputs {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .section-head,
+    .assumption-grid,
+    .source-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-head {
+      gap: 20px;
+    }
+
+    .date-stamp {
+      justify-self: start;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .architecture-section,
+    .scenario-section,
+    .cost-section,
+    .sustainability-section,
+    .source-section {
+      padding-block: 64px;
+    }
+
+    .architecture-flow article {
+      grid-template-columns: 32px 26px 1fr;
+      padding: 16px;
+    }
+
+    .field-grid,
+    .calculator-results {
+      grid-template-columns: 1fr;
+    }
+
+    .calculator-inputs {
+      padding: 20px;
+    }
+  }
+</style>

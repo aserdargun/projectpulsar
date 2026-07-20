@@ -3,6 +3,7 @@ import BaseLayout from "./BaseLayout.astro";
 import CommandMap from "@/components/CommandMap.astro";
 import ExperienceSections from "@/components/ExperienceSections.astro";
 import InfographicGallery from "@/components/InfographicGallery.astro";
+import InfrastructurePlanner from "@/components/InfrastructurePlanner.astro";
 import PageVisual from "@/components/PageVisual.astro";
 import { labels, paths, type Language, type PageKey } from "@/data/site";
 
@@ -47,7 +48,7 @@ const copy = labels[lang];
           {
             home && (
               <div class="hero-actions">
-                <a class="button button--primary" href={paths.platform[lang]}>
+                <a class="button button--primary" href={paths.infrastructure[lang]}>
                   {copy.explore}
                   <span aria-hidden="true">→</span>
                 </a>
@@ -59,7 +60,7 @@ const copy = labels[lang];
           }
         </div>
         <div class="hero-visual">
-          {home || pageKey === "platform" ? <CommandMap {lang} /> : <PageVisual {lang} {pageKey} />}
+          {home || pageKey === "platform" || pageKey === "infrastructure" ? <CommandMap {lang} /> : <PageVisual {lang} {pageKey} />}
         </div>
       </div>
       <div class="container hero-rail" aria-label={lang === "en" ? "PULSAR design principles" : "PULSAR tasarım ilkeleri"}>
@@ -71,6 +72,7 @@ const copy = labels[lang];
     </section>
 
     <ExperienceSections {lang} {pageKey} />
+    {pageKey === "infrastructure" && <InfrastructurePlanner {lang} />}
     <InfographicGallery {lang} {pageKey} />
 
     <section class="narrative-section">
@@ -94,8 +96,8 @@ const copy = labels[lang];
           <small>
             {
               lang === "en"
-                ? "A public vision for a secure, sovereign and adaptable AI operating layer."
-                : "Güvenli, egemen ve uyarlanabilir bir AI çalışma katmanı için kamusal vizyon."
+                ? "Open research for secure, sustainable and locally operated intelligence."
+                : "Güvenli, sürdürülebilir ve lokal işletilen zekâ için açık araştırma."
             }
           </small>
         </aside>

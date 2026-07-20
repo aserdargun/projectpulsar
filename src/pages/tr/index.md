@@ -3,14 +3,20 @@ layout: ../../layouts/PageLayout.astro
 lang: tr
 translationKey: home
 slug: ""
-title: "Tek güvenilir çalışma katmanı. Zekâya uzanan birçok yol."
-description: "Project PULSAR; insanları, bilgiyi, araçları ve modelleri bir araya getiren egemen, kontrollü ve uyarlanabilir AI çalışma katmanı vizyonudur."
+title: "Açık modeller. Lokal kontrol. Kalıcı zekâ."
+description: "Project PULSAR, güçlü açık-ağırlık dil modellerini kurumların güven sınırları içinde güvenli ve sürdürülebilir çalıştırmaya odaklanan bağımsız Ar-Ge girişimidir."
 navLabel: "Ana sayfa"
 order: 0
 draft: false
 eyebrow: "Private Unified Language Systems and AI Runtime"
-lead: "Modellerin gelişebildiği, verinin güven sınırında kaldığı ve her sonucun yetki ile kanıta bağlı olduğu ortak bir zekâ katmanı."
+lead: "Güçlü dil modellerini kendi ortamında çalıştırmak isteyen kurumlar için açık araştırma girişimi ve referans mimari: veri yetkisinden, operasyonel kontrolden ve model değiştirme özgürlüğünden vazgeçmeden."
 ---
+
+## Lokal işletilen AI için Ar-Ge girişimi
+
+Project PULSAR tek bir pratik soruya odaklanan bağımsız bir araştırma ve geliştirme girişimi olarak kurulmaktadır: **kurumlar güçlü açık-ağırlık dil modellerini güvenlikten, sürdürülebilirlikten ve insan yetkisinden vazgeçmeden kendi ortamlarında nasıl çalıştırabilir?**
+
+Girişim; kamusal referans mimariler, değerlendirme yöntemleri, maliyet modelleri ve işletme ilkeleri geliştirir. Tek bir modeli, donanım üreticisini veya satın alma yolunu teşvik etmez. Kurumların kendi iş yükleri ve kısıtlarıyla sınayabilmesi için varsayımları görünür kılar.
 
 ## Zekânın bir işletme modeline ihtiyacı var
 
@@ -19,6 +25,8 @@ AI kullanımı çoğu zaman birbirinden kopuk asistanlar, ayrı model uçları v
 Project PULSAR farklı bir temel hayal eder: uygulamalar ile değişen model, bilgi kaynağı ve araç dünyası arasında duran **özel ve birleşik bir çalışma katmanı**.
 
 PULSAR tek bir chatbot veya tek bir model ailesine yapılmış bir yatırım değildir. Zekâya nasıl erişileceğini, zekânın hangi bağlamla çalışacağını, nasıl yönetileceğini ve nasıl gözlemleneceğini belirleyen kalıcı katmandır.
+
+Lokal işletim varsayılan araştırma sınırıdır. Harici servislerin rolü olabilir; ancak hassas bağlam ve sonuç doğuran işler yalnızca bir model uç noktası kolay olduğu için hesap verebilir ortamın dışına çıkmamalıdır.
 
 ## Kalıcı AI altyapısı için manifesto
 

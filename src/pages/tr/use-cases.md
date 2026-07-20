@@ -6,7 +6,7 @@ slug: "use-cases"
 title: "Sınırsız olasılıkla değil, yararlı işle başla."
 description: "Project PULSAR bilgi, operasyon, mühendislik ve karar desteğinde ölçülebilir ve erişime hazır kullanım alanlarını önceliklendirir."
 navLabel: "Kullanım alanları"
-order: 3
+order: 4
 draft: false
 eyebrow: "Ölçekten önce değer"
 lead: "İlk kullanım alanları ölçülebilecek kadar dar, önem taşıyacak kadar değerli ve platforma üretimin ne gerektirdiğini öğretecek kadar güvenli olmalıdır."

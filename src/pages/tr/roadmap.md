@@ -6,7 +6,7 @@ slug: "roadmap"
 title: "Yalnız kanıtın desteklediğini ölçekle."
 description: "Project PULSAR yol haritası kullanım alanı keşfinden ölçümlü doğrulamaya, kontrollü platform temeline ve kanıta dayalı ölçeğe ilerler."
 navLabel: "Yol haritası"
-order: 5
+order: 6
 draft: false
 eyebrow: "Öğrenme odaklı yol"
 lead: "Yol haritası maksimum kapasite kurma sözü değil, karar kapıları dizisidir. Her aşama bir sonraki taahhütten önce belirsizliği azaltmalıdır."

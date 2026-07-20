@@ -3,14 +3,20 @@ layout: ../../layouts/PageLayout.astro
 lang: en
 translationKey: home
 slug: ""
-title: "One trusted runtime. Many paths to intelligence."
-description: "Project PULSAR is a public vision for a sovereign, governed and adaptive AI runtime that connects people, knowledge, tools and models."
+title: "Open models. Local control. Durable intelligence."
+description: "Project PULSAR is an independent R&D initiative for running strong open-weight language models securely and sustainably inside organizational trust boundaries."
 navLabel: "Home"
 order: 0
 draft: false
 eyebrow: "Private Unified Language Systems and AI Runtime"
-lead: "A shared intelligence layer where models can evolve, data stays within its trust boundary, and every outcome remains connected to authority and evidence."
+lead: "An open research initiative and reference architecture for organizations that want strong language models in their own environment—without surrendering data authority, operational control or the freedom to change models."
 ---
+
+## An R&D initiative for locally operated AI
+
+Project PULSAR is being established as an independent research and development initiative focused on one practical question: **how can organizations operate strong open-weight language models inside their own environments without compromising security, sustainability or human authority?**
+
+The initiative develops public reference architectures, evaluation methods, cost models and operating principles. It does not promote one model, hardware vendor or procurement path. It makes the assumptions visible so organizations can test them against their own workloads and constraints.
 
 ## Intelligence needs an operating model
 
@@ -19,6 +25,8 @@ AI adoption often begins with isolated assistants, disconnected model endpoints 
 Project PULSAR imagines a different foundation: a **private, unified runtime** that sits between applications and a changing landscape of models, knowledge sources and tools.
 
 It is not a single chatbot and it is not a bet on one model family. It is the durable layer that decides how intelligence is accessed, grounded, governed and observed.
+
+Local operation is the default research boundary. External services may still have a role, but sensitive context and consequential work should not leave an accountable environment merely because a model endpoint is convenient.
 
 ## A manifesto for durable AI infrastructure
 

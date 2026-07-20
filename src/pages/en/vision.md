@@ -3,35 +3,41 @@ layout: ../../layouts/PageLayout.astro
 lang: en
 translationKey: vision
 slug: "vision"
-title: "An AI runtime built to outlast the model cycle."
-description: "The Project PULSAR vision replaces fragmented AI stacks with a unified, adaptive and accountable runtime."
+title: "Open models. Local capability. Shared evidence."
+description: "Project PULSAR is an independent R&D initiative for secure, sustainable and locally operated open-weight language models."
 navLabel: "Vision"
 order: 1
 draft: false
 eyebrow: "The long view"
-lead: "Models will change faster than the systems around them. The durable advantage is a trusted runtime that can adopt new intelligence without rebuilding every application."
+lead: "Project PULSAR is being established to help organizations research, validate and operate capable open-weight language models inside their own trust boundaries."
 ---
 
-## The problem is larger than model access
+## Why this initiative exists
 
-Making a model available is only the first step. Real use introduces identity, data access, context, tool permissions, quality thresholds, observability, resilience and human accountability.
+Capable open-weight models create a real path to local control, but downloading a model is not the same as building a trustworthy organizational capability. Real use introduces identity, data access, context, tool permissions, quality thresholds, observability, resilience, energy use and human accountability.
 
-When each application solves those concerns independently, the same controls are rebuilt many times—and still behave differently. Model choice becomes coupled to application code. Knowledge access becomes inconsistent. Operational learning remains scattered.
+The field also moves too quickly for isolated procurement decisions. Organizations need reproducible architectures, honest benchmarks and transparent cost models—not a new dependency hidden behind a different interface.
 
-## The PULSAR vision
+## An open R&D organization
 
-PULSAR is a shared runtime for applications that need language, reasoning, retrieval, multimodal understanding or tool use. It creates a stable boundary around a changing intelligence layer.
+Project PULSAR is being developed as an independent research and development initiative. Its purpose is to make secure and sustainable local operation more understandable, testable and attainable for organizations.
 
-Applications communicate through a consistent interface. The runtime evaluates identity and policy, selects an appropriate capability path, introduces only permitted context, applies verification and records the signals needed to understand the result.
+The initiative will publish bilingual reference architectures, workload methods, evaluation practices and dated cost assumptions. It will remain model- and vendor-neutral, distinguish measured evidence from planning assumptions and avoid representing research paths as completed deployments.
 
 ## Strategic objectives
 
-- **Unify access:** give applications a coherent way to request intelligence without owning a complete serving stack.
-- **Preserve sovereignty:** keep sensitive context inside approved trust and residency boundaries.
-- **Adapt by task:** route work according to capability, risk, latency and evidence needs.
-- **Ground with authority:** connect answers to permission-aware knowledge and observable sources.
-- **Enable bounded agency:** allow tool use through explicit scopes, limits and approval points.
-- **Measure before scaling:** connect quality, demand, reliability and resource decisions to real workloads.
+- **Publish open reference patterns:** turn architecture, security and operations research into reusable public guidance.
+- **Benchmark responsibly:** compare models and serving paths against declared workloads, constraints and quality gates.
+- **Preserve local control:** keep sensitive context, policy and operational evidence inside the organization's approved boundary.
+- **Make economics visible:** publish dated, editable capacity and Türkiye landed-cost assumptions instead of timeless price claims.
+- **Design for sustainability:** connect model choice, quantization, utilization, power and cooling to useful work delivered.
+- **Grow a learning community:** enable practitioners, researchers and organizations to test, challenge and improve the shared evidence.
+
+## The PULSAR runtime thesis
+
+PULSAR is also a reference runtime for applications that need language, reasoning, retrieval, multimodal understanding or tool use. It creates a stable boundary around a changing intelligence layer.
+
+Applications communicate through a consistent interface. The runtime evaluates identity and policy, selects an appropriate capability path, introduces only permitted context, applies verification and records the signals needed to understand the result.
 
 ## What success means
 

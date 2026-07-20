@@ -27,11 +27,11 @@
   </g>
   <path d="M580 315h550" stroke="url(#line)" stroke-opacity=".5"/>
   <g fill="#edfaff" font-family="Arial, Helvetica, sans-serif">
-    <text x="74" y="98" fill="#51d9ec" font-size="22" font-weight="700" letter-spacing="5">PRIVATE UNIFIED AI RUNTIME</text>
+    <text x="74" y="98" fill="#51d9ec" font-size="22" font-weight="700" letter-spacing="5">OPEN-WEIGHT AI · LOCAL CONTROL</text>
     <text x="72" y="215" font-size="76" font-weight="800" letter-spacing="-3">PROJECT</text>
     <text x="72" y="298" fill="#51d9ec" font-size="76" font-weight="800" letter-spacing="6">PULSAR</text>
-    <text x="76" y="390" fill="#a7c1cd" font-size="29">One trusted runtime.</text>
-    <text x="76" y="429" fill="#a7c1cd" font-size="29">Many paths to intelligence.</text>
+    <text x="76" y="390" fill="#a7c1cd" font-size="29">Researching secure, sustainable</text>
+    <text x="76" y="429" fill="#a7c1cd" font-size="29">local intelligence.</text>
   </g>
   <g transform="translate(76 520)" font-family="Arial, Helvetica, sans-serif">
     <rect width="322" height="48" rx="24" fill="#0a1a2b" stroke="#51d9ec" stroke-opacity=".35"/>

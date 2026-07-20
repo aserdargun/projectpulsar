@@ -6,7 +6,7 @@ slug: "use-cases"
 title: "Begin with useful work, not limitless possibility."
 description: "Project PULSAR prioritizes measurable, permission-ready use cases across knowledge, operations, engineering and decision support."
 navLabel: "Use cases"
-order: 3
+order: 4
 draft: false
 eyebrow: "Value before scale"
 lead: "The first use cases should be narrow enough to measure, valuable enough to matter and safe enough to teach the platform what production requires."

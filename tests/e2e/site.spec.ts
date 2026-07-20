@@ -5,12 +5,14 @@ const routes = [
   "/en/",
   "/en/vision/",
   "/en/platform/",
+  "/en/infrastructure/",
   "/en/use-cases/",
   "/en/trust/",
   "/en/roadmap/",
   "/tr/",
   "/tr/vision/",
   "/tr/platform/",
+  "/tr/infrastructure/",
   "/tr/use-cases/",
   "/tr/trust/",
   "/tr/roadmap/"
@@ -44,22 +46,42 @@ test("theme selection is persisted", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
-test("primary page has no serious accessibility violations", async ({ page }) => {
-  await page.goto("/en/");
-  const results = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa"])
-    .analyze();
+test("primary and infrastructure pages have no serious accessibility violations", async ({
+  page
+}) => {
+  for (const route of ["/en/", "/tr/infrastructure/"]) {
+    await page.goto(route);
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa"])
+      .analyze();
 
-  expect(
-    results.violations.filter((violation) =>
-      ["critical", "serious"].includes(violation.impact ?? "")
-    )
-  ).toEqual([]);
+    expect(
+      results.violations.filter((violation) =>
+        ["critical", "serious"].includes(violation.impact ?? "")
+      )
+    ).toEqual([]);
+  }
+});
+
+test("Türkiye landed-cost calculator updates the dated TRY result", async ({
+  page
+}) => {
+  await page.goto("/tr/infrastructure/");
+  await expect(page.locator('time[datetime="2026-07-20"]')).toHaveText(
+    "20 Temmuz 2026"
+  );
+
+  const grossTry = page.locator('[data-result="gross-try"]');
+  const initial = await grossTry.textContent();
+  await page.locator('[data-field="fx"]').fill("50");
+
+  await expect(grossTry).not.toHaveText(initial ?? "");
+  await expect(grossTry).toContainText("₺");
 });
 
 test("mobile layout does not overflow horizontally", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
-  await page.goto("/tr/");
+  await page.goto("/tr/infrastructure/");
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth

@@ -6,7 +6,7 @@ slug: "roadmap"
 title: "Scale only what evidence supports."
 description: "The Project PULSAR roadmap moves from use-case discovery to measured validation, governed platform foundations and evidence-led scale."
 navLabel: "Roadmap"
-order: 5
+order: 6
 draft: false
 eyebrow: "A learning-led path"
 lead: "The roadmap is a sequence of decision gates, not a promise to deploy maximum capacity. Every stage should reduce uncertainty before the next commitment."

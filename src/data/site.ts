@@ -3,6 +3,7 @@ export type PageKey =
   | "home"
   | "vision"
   | "platform"
+  | "infrastructure"
   | "use-cases"
   | "trust"
   | "roadmap";
@@ -13,6 +14,10 @@ export const paths: Record<PageKey, Record<Language, string>> = {
   home: { en: "/en/", tr: "/tr/" },
   vision: { en: "/en/vision/", tr: "/tr/vision/" },
   platform: { en: "/en/platform/", tr: "/tr/platform/" },
+  infrastructure: {
+    en: "/en/infrastructure/",
+    tr: "/tr/infrastructure/"
+  },
   "use-cases": { en: "/en/use-cases/", tr: "/tr/use-cases/" },
   trust: { en: "/en/trust/", tr: "/tr/trust/" },
   roadmap: { en: "/en/roadmap/", tr: "/tr/roadmap/" }
@@ -27,13 +32,13 @@ export const labels = {
     languageLabel: "View this page in Turkish",
     menu: "Open navigation",
     closeMenu: "Close navigation",
-    initiative: "A vision in validation",
-    explore: "Explore the platform",
+    initiative: "An open R&D initiative",
+    explore: "Explore the local architecture",
     source: "View source",
     footer:
-      "A public vision for sovereign, trusted and adaptive AI infrastructure.",
+      "An independent R&D initiative for secure, sustainable and locally operated open-weight AI.",
     disclaimer:
-      "Project PULSAR describes a forward-looking platform vision. Capabilities and outcomes remain subject to validation."
+      "Project PULSAR publishes reference architectures and planning estimates for research. Validate capabilities, prices, taxes and compliance before implementation."
   },
   tr: {
     skip: "İçeriğe geç",
@@ -43,13 +48,13 @@ export const labels = {
     languageLabel: "Bu sayfayı İngilizce görüntüle",
     menu: "Menüyü aç",
     closeMenu: "Menüyü kapat",
-    initiative: "Doğrulama aşamasında bir vizyon",
-    explore: "Platformu keşfet",
+    initiative: "Açık bir Ar-Ge girişimi",
+    explore: "Lokal mimariyi incele",
     source: "Kaynak kodu görüntüle",
     footer:
-      "Egemen, güvenilir ve uyarlanabilir AI altyapısı için kamusal bir vizyon.",
+      "Güçlü açık-ağırlık modellerin güvenli, sürdürülebilir ve lokal işletimi için bağımsız Ar-Ge girişimi.",
     disclaimer:
-      "Project PULSAR ileriye dönük bir platform vizyonunu anlatır. Yetenekler ve sonuçlar doğrulamaya tabidir."
+      "Project PULSAR araştırma amaçlı referans mimariler ve planlama tahminleri yayımlar. Uygulamadan önce yetenekleri, fiyatları, vergileri ve mevzuatı doğrulayın."
   }
 } satisfies Record<Language, Record<string, string>>;
 
@@ -60,6 +65,11 @@ export const navigation: Record<
   en: [
     { key: "vision", label: "Vision", href: paths.vision.en },
     { key: "platform", label: "Platform", href: paths.platform.en },
+    {
+      key: "infrastructure",
+      label: "Local runtime",
+      href: paths.infrastructure.en
+    },
     { key: "use-cases", label: "Use cases", href: paths["use-cases"].en },
     { key: "trust", label: "Trust", href: paths.trust.en },
     { key: "roadmap", label: "Roadmap", href: paths.roadmap.en }
@@ -67,6 +77,11 @@ export const navigation: Record<
   tr: [
     { key: "vision", label: "Vizyon", href: paths.vision.tr },
     { key: "platform", label: "Platform", href: paths.platform.tr },
+    {
+      key: "infrastructure",
+      label: "Lokal sistem",
+      href: paths.infrastructure.tr
+    },
     {
       key: "use-cases",
       label: "Kullanım alanları",

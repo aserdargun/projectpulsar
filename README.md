@@ -1,10 +1,11 @@
 # Project PULSAR
 
-A bilingual public vision for a sovereign, trusted and adaptive AI runtime.
+A bilingual, independent R&D initiative for secure, sustainable and locally
+operated open-weight language models.
 
-Project PULSAR describes a durable layer between applications and a changing
-ecosystem of models, knowledge sources and tools. The site is intentionally
-vendor-neutral and does not claim that the envisioned platform is already
+Project PULSAR publishes a vendor-neutral runtime vision, open reference
+architecture, evaluation discipline and dated planning estimates for local AI
+infrastructure. It does not claim that the envisioned platform is already
 deployed.
 
 ## Local development
@@ -47,11 +48,13 @@ languages with the same slug and order.
 
 ## Public-content boundary
 
-The repository contains only rewritten, public-facing content. Source planning
-notes, internal diagrams, named internal systems, infrastructure quantities,
-procurement details and unverified delivery claims must never be copied into
-this repository. `npm run test:privacy` checks the source and generated output
-for known restricted references.
+The repository contains only rewritten, public-facing content. Public reference
+architectures and dated planning estimates are allowed when their assumptions,
+sources and uncertainty are visible. Source planning notes, internal diagrams,
+named internal systems, confidential specifications, actual supplier quotes and
+unverified delivery claims must never be copied into this repository.
+`npm run test:privacy` checks the source and generated output for known
+restricted references.
 
 ## Deployment
 
