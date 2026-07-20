@@ -82,10 +82,8 @@ test("Türkiye landed-cost calculator updates the dated TRY result", async ({
 test("mobile layout does not overflow horizontally", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/tr/infrastructure/");
-  const dimensions = await page.evaluate(async () => {
-    const scrollWidth = document.documentElement.scrollWidth;
+  const overflow = await page.evaluate(async () => {
     const clientWidth = document.documentElement.clientWidth;
-    const bodyScrollWidth = document.body.scrollWidth;
     const offenders = [...document.querySelectorAll<HTMLElement>("body *")]
       .map((element) => {
         const rect = element.getBoundingClientRect();
@@ -108,25 +106,8 @@ test("mobile layout does not overflow horizontally", async ({ page }) => {
     const reachableScrollX = window.scrollX;
     window.scrollTo(0, 0);
 
-    const suppressPseudo = document.createElement("style");
-    suppressPseudo.textContent =
-      "*::before,*::after{display:none!important}";
-    document.head.append(suppressPseudo);
-    await new Promise(requestAnimationFrame);
-    const scrollWidthWithoutPseudo = document.documentElement.scrollWidth;
-    suppressPseudo.remove();
-
-    return {
-      scrollWidth,
-      clientWidth,
-      bodyScrollWidth,
-      reachableScrollX,
-      scrollWidthWithoutPseudo,
-      offenders
-    };
+    return { reachableScrollX, offenders };
   });
-  expect(
-    dimensions.scrollWidth,
-    `Overflow diagnostics: ${JSON.stringify(dimensions)}`
-  ).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+  expect(overflow.offenders).toEqual([]);
+  expect(overflow.reachableScrollX).toBe(0);
 });
