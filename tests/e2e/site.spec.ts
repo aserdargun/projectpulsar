@@ -84,7 +84,26 @@ test("mobile layout does not overflow horizontally", async ({ page }) => {
   await page.goto("/tr/infrastructure/");
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth
+    clientWidth: document.documentElement.clientWidth,
+    offenders: [...document.querySelectorAll<HTMLElement>("body *")]
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          element: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${[...element.classList].map((name) => `.${name}`).join("")}`,
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width)
+        };
+      })
+      .filter(
+        ({ left, right, width }) =>
+          width > 0 &&
+          (left < -1 || right > document.documentElement.clientWidth + 1)
+      )
+      .slice(0, 12)
   }));
-  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth + 1);
+  expect(
+    dimensions.scrollWidth,
+    `Overflowing elements: ${JSON.stringify(dimensions.offenders)}`
+  ).toBeLessThanOrEqual(dimensions.clientWidth + 1);
 });
