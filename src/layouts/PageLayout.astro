@@ -251,7 +251,12 @@ const copy = labels[lang];
 
   @media (max-width: 960px) {
     .hero-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hero-copy,
+    .hero-visual {
+      min-width: 0;
     }
 
     .hero-visual {
