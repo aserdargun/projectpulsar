@@ -22,6 +22,7 @@ const benchmarkKeys = Object.keys(benchmarkLabels) as BenchmarkKey[];
 const base = frontierModels[0];
 const openModels = frontierModels.slice(1);
 const initialInvestment = investmentConfigurations[0];
+const serializedInvestmentConfigurations = JSON.stringify(investmentConfigurations);
 const initialElectricity = initialInvestment.powerKw * 8760 * 0.12;
 const initialPayback = initialInvestment.capexUsd / (initialInvestment.cloudMonthlyUsd - initialElectricity / 12);
 const formatNumber = (value: number, digits = 1) =>
@@ -210,7 +211,12 @@ const delta = (model: (typeof openModels)[number], key: BenchmarkKey) => {
       <p>{en ? "This calculator preserves the workbook formula: annual electricity = kW × hours × $/kWh; payback months = CapEx ÷ (monthly cloud rent − monthly electricity)." : "Bu hesaplayıcı çalışma kitabındaki formülü korur: yıllık elektrik = kW × saat × $/kWh; geri dönüş ayı = CapEx ÷ (aylık bulut kirası − aylık elektrik)."}</p>
     </div>
 
-    <div class="investment-board" data-investment-calculator data-locale={locale}>
+    <div
+      class="investment-board"
+      data-investment-calculator
+      data-locale={locale}
+      data-investment-configurations={serializedInvestmentConfigurations}
+    >
       <form class="investment-inputs">
         <div class="board-title"><Calculator size={27} stroke-width={1.6} aria-hidden="true" /><div><span>{en ? "Editable workbook assumptions" : "Düzenlenebilir çalışma kitabı varsayımları"}</span><h3>{en ? "Buy versus cloud planning model" : "Satın alma–bulut planlama modeli"}</h3></div></div>
         <label>{en ? "Infrastructure preset" : "Altyapı preseti"}<select data-investment-field="configuration">
@@ -254,7 +260,8 @@ const delta = (model: (typeof openModels)[number], key: BenchmarkKey) => {
   </div>
 </section>
 
-<script is:inline define:vars={{ investmentConfigurations }}>
+<script>
+  // @ts-nocheck -- progressively enhanced DOM controls; server-rendered values remain the fallback.
   const money = (locale, value) => new Intl.NumberFormat(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
   const number = (locale, value, digits = 1) => new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
 
@@ -282,6 +289,7 @@ const delta = (model: (typeof openModels)[number], key: BenchmarkKey) => {
 
   document.querySelectorAll("[data-investment-calculator]").forEach((calculator) => {
     const locale = calculator.dataset.locale || "en-US";
+    const investmentConfigurations = JSON.parse(calculator.dataset.investmentConfigurations || "[]");
     const field = (name) => calculator.querySelector(`[data-investment-field="${name}"]`);
     const result = (name) => calculator.querySelector(`[data-investment-result="${name}"]`);
     const update = () => {
