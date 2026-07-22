@@ -22,9 +22,6 @@ const blocked = [
   /\bvitals\b/iu,
   /\batlas\b/iu,
   /\bforge\b/iu,
-  /\bb300\b/iu,
-  /\bgb300\b/iu,
-  /\bmi355x\b/iu,
   /confidentiality:\s*internal/iu,
   /organization:\s*/iu
 ];

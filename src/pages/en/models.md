@@ -4,12 +4,12 @@ lang: en
 translationKey: models
 slug: "models"
 title: "Adapt open models. Keep the evidence."
-description: "Compare verifiable open-weight model references and explore a governed local LoRA and QLoRA fine-tuning workflow with Unsloth."
+description: "Compare open-weight frontier references, calculate GPU memory fit and model Kimi K3 buy-versus-cloud investment assumptions alongside a governed local fine-tuning workflow."
 navLabel: "Models"
 order: 4
 draft: false
 eyebrow: "Open-weight models and local fine-tuning"
-lead: "Project PULSAR treats model selection and adaptation as reproducible engineering: choose by workload, tune only when evidence supports it, and keep data rights, evaluations and rollback attached to every release."
+lead: "Project PULSAR treats model selection, infrastructure investment and adaptation as reproducible engineering: compare dated evidence, expose cost assumptions, choose by workload and keep evaluations and rollback attached to every release."
 ---
 
 ## Why model choice is a portfolio decision

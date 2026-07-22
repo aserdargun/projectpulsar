@@ -4,12 +4,12 @@ lang: tr
 translationKey: models
 slug: "models"
 title: "Açık modelleri uyarla. Kanıtı koru."
-description: "Doğrulanabilir açık-ağırlık model referanslarını karşılaştırın; Unsloth ile yönetişimli lokal LoRA ve QLoRA ince ayar iş akışını inceleyin."
+description: "Açık-ağırlık öncü model referanslarını karşılaştırın, GPU bellek uyumunu hesaplayın ve yönetişimli lokal ince ayar iş akışıyla birlikte Kimi K3 satın alma–bulut yatırım varsayımlarını modelleyin."
 navLabel: "Modeller"
 order: 4
 draft: false
 eyebrow: "Açık-ağırlık modeller ve lokal ince ayar"
-lead: "Project PULSAR model seçimini ve uyarlamayı tekrarlanabilir mühendislik olarak ele alır: iş yüküne göre seç, yalnız kanıt desteklediğinde eğit ve her sürümde veri haklarını, değerlendirmeyi ve geri dönüşü koru."
+lead: "Project PULSAR model seçimini, altyapı yatırımını ve uyarlamayı tekrarlanabilir mühendislik olarak ele alır: tarihli kanıtı karşılaştır, maliyet varsayımlarını görünür kıl, iş yüküne göre seç ve her sürümde değerlendirme ile geri dönüşü koru."
 ---
 
 ## Model seçimi neden bir portföy kararıdır?

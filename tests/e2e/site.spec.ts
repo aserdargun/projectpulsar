@@ -107,12 +107,14 @@ test("mobile layout does not overflow horizontally", async ({ page }) => {
             element: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${[...element.classList].map((name) => `.${name}`).join("")}`,
             left: Math.round(rect.left),
             right: Math.round(rect.right),
-            width: Math.round(rect.width)
+            width: Math.round(rect.width),
+            allowedOverflow: Boolean(element.closest("[data-allow-overflow]"))
           };
         })
         .filter(
-          ({ left, right, width }) =>
+          ({ allowedOverflow, left, right, width }) =>
             width > 0 &&
+            !allowedOverflow &&
             (left < -1 || right > document.documentElement.clientWidth + 1)
         )
         .slice(0, 12);

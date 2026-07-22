@@ -34,7 +34,7 @@ const models = en
         scale: "8.2B parameters",
         context: "32K native · 131K with YaRN",
         license: "Apache 2.0",
-        note: "A useful starting point for domain behavior, structured output and bilingual experiments. “Qwen 3.8” is interpreted here as the official Qwen3-8B model.",
+        note: "A useful starting point for domain behavior, structured output and bilingual experiments. Qwen3-8B is a distinct small model and must not be confused with the supplied workbook's hosted Qwen 3.8 Max preview.",
         href: "https://huggingface.co/Qwen/Qwen3-8B"
       },
       {
@@ -96,7 +96,7 @@ const models = en
         scale: "8,2B parametre",
         context: "32K doğal · YaRN ile 131K",
         license: "Apache 2.0",
-        note: "Alan davranışı, yapılandırılmış çıktı ve iki dilli deneyler için kullanışlı bir başlangıçtır. “Qwen 3.8” ifadesi burada resmî model adı olan Qwen3-8B olarak yorumlanır.",
+        note: "Alan davranışı, yapılandırılmış çıktı ve iki dilli deneyler için kullanışlı bir başlangıçtır. Qwen3-8B ayrı bir küçük modeldir; sağlanan çalışma kitabındaki hosted Qwen 3.8 Max önizlemesiyle karıştırılmamalıdır.",
         href: "https://huggingface.co/Qwen/Qwen3-8B"
       },
       {
@@ -262,8 +262,8 @@ const guardrails = en
       <p>
         {
           en
-            ? "The official Qwen catalog contains Qwen3-8B—not a release named “Qwen 3.8.” No Kimi K3 model card, weights, license and checksums were found in Moonshot AI’s official model hub or GitHub organization on the verification date. PULSAR therefore keeps Kimi K3 on a watchlist and uses Kimi K2.6 and K2.7-Code as verifiable references."
-            : "Resmî Qwen kataloğunda “Qwen 3.8” adlı bir sürüm değil, Qwen3-8B bulunuyor. Doğrulama tarihinde Moonshot AI'ın resmî model merkezi ve GitHub organizasyonunda Kimi K3 model kartı, ağırlıkları, lisansı ve sağlama toplamları bulunamadı. PULSAR bu nedenle Kimi K3'ü izleme listesinde tutuyor; doğrulanabilir referans olarak Kimi K2.6 ve K2.7-Code'u kullanıyor."
+            ? "The official Qwen catalog contains Qwen3-8B as a distinct small model. The supplied Qwen 3.8 Max row is retained separately as a hosted preview with no released weights, benchmark table or license in the dataset. No Kimi K3 model card, weights, license and checksums were found in Moonshot AI’s official model hub or GitHub organization on the verification date, so PULSAR keeps Kimi K3 on a watchlist and uses Kimi K2.6 and K2.7-Code as verifiable references."
+            : "Resmî Qwen kataloğunda Qwen3-8B ayrı bir küçük model olarak bulunur. Sağlanan Qwen 3.8 Max satırı; veri setinde yayımlanmış ağırlık, benchmark tablosu veya lisans bulunmayan hosted önizleme olarak ayrıca korunur. Doğrulama tarihinde Moonshot AI'ın resmî model merkezi ve GitHub organizasyonunda Kimi K3 model kartı, ağırlıkları, lisansı ve sağlama toplamları bulunamadı. PULSAR bu nedenle Kimi K3'ü izleme listesinde tutuyor; doğrulanabilir referans olarak Kimi K2.6 ve K2.7-Code'u kullanıyor."
         }
       </p>
       <div class="source-row">

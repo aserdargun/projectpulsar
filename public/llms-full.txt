@@ -58,13 +58,15 @@ Costs are planning estimates, not supplier quotes or legal, customs, tax or inve
 
 PULSAR maintains a model portfolio rather than a universal leaderboard. Compact models are local adaptation candidates when they satisfy workload quality, language, latency, license and operating constraints. Frontier-scale open-weight models are architecture and evaluation references until their infrastructure envelope is justified.
 
-Qwen3-8B is the practical local fine-tuning baseline described on the site. The phrase “Qwen 3.8” is interpreted as the official Qwen3-8B model name. Qwen3.6-35B-A3B is treated as a medium-scale mixture-of-experts pilot candidate. Kimi-K2.6, Kimi-K2.7-Code, Qwen3.5-397B-A17B and GLM-5 are frontier-scale references rather than default workstation fine-tuning targets.
+Qwen3-8B is the practical local fine-tuning baseline described on the site and is distinct from the supplied workbook's hosted Qwen 3.8 Max preview. Qwen3.6-35B-A3B is treated as a medium-scale mixture-of-experts pilot candidate. Kimi-K2.6, Kimi-K2.7-Code, Qwen3.5-397B-A17B and GLM-5 are frontier-scale references rather than default workstation fine-tuning targets.
 
 As verified on 20 July 2026, Moonshot AI's official model hub and GitHub organization did not publish a Kimi K3 model card, weights, license and checksums. PULSAR keeps Kimi K3 on a watchlist until those artifacts can be independently verified.
 
 The recommended adaptation ladder is prompt and tool design, permission-aware retrieval, LoRA, QLoRA, and only then continued pre-training or full fine-tuning. Fine-tuning changes repeatable behavior; it does not replace governed retrieval for changing facts or private records.
 
 Unsloth is presented as a local LoRA and QLoRA research path. Every experiment must record dataset rights, model revision and checksums, an immutable baseline, held-out quality and safety evaluation, adapter provenance, a named human owner and a tested rollback route. Vendor-reported memory-fit figures are planning references and must be remeasured for the actual sequence length, batch, optimizer, precision and checkpoint strategy.
+
+The models page also integrates a supplied LeanViser planning workbook dated 22 July 2026. It compares twelve frontier open-weight candidates with Claude Opus 4.8 as a closed benchmark baseline, exposes score deltas, maps FP8 plus KV-cache memory envelopes to GPU configurations, and includes a Kimi K3 buy-versus-cloud calculator. The calculator preserves the workbook formulas for annual electricity and simple payback. Its model availability, benchmark, GPU price, power, cloud-rent and CapEx values are dated assumptions, not independently verified PULSAR benchmark results, supplier quotes or investment advice.
 
 ## Status
 

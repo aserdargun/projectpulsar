@@ -1,0 +1,825 @@
+---
+import { Calculator, Cpu, DatabaseZap, Gauge, Scale, Server, ShieldAlert } from "@lucide/astro";
+import type { Language } from "@/data/site";
+import {
+  benchmarkLabels,
+  frontierModels,
+  gpuOptions,
+  hardwareExtras,
+  investmentConfigurations,
+  sourceVerdicts,
+  type BenchmarkKey
+} from "@/data/frontierInvestment";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const en = lang === "en";
+const locale = en ? "en-US" : "tr-TR";
+const benchmarkKeys = Object.keys(benchmarkLabels) as BenchmarkKey[];
+const base = frontierModels[0];
+const openModels = frontierModels.slice(1);
+const initialInvestment = investmentConfigurations[0];
+const initialElectricity = initialInvestment.powerKw * 8760 * 0.12;
+const initialPayback = initialInvestment.capexUsd / (initialInvestment.cloudMonthlyUsd - initialElectricity / 12);
+const formatNumber = (value: number, digits = 1) =>
+  new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
+const formatInteger = (value: number) => new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value);
+const formatUsd = (value: number) =>
+  new Intl.NumberFormat(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+const local = (value: { en: string; tr: string }) => value[lang];
+const delta = (model: (typeof openModels)[number], key: BenchmarkKey) => {
+  const value = model.benchmarks[key];
+  const baseValue = base.benchmarks[key];
+  return value === undefined || baseValue === undefined ? null : value - baseValue;
+};
+---
+
+<section class="frontier-section frontier-section--matrix" aria-labelledby="frontier-matrix-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="section-index">06 / {en ? "Frontier model evidence" : "Öncü model kanıtı"}</p>
+        <h2 id="frontier-matrix-title">
+          {en ? "Frontier open-model comparison and investment lab" : "Öncü açık model kıyası ve yatırım laboratuvarı"}
+        </h2>
+      </div>
+      <p>
+        {en
+          ? "The supplied July 2026 LeanViser workbook is integrated here as a dated planning dataset: 12 open-weight candidates, Claude Opus 4.8 as the closed baseline, hardware fit and editable investment assumptions."
+          : "Sağlanan Temmuz 2026 LeanViser çalışma kitabı burada tarihli bir planlama veri seti olarak yer alır: 12 açık-ağırlık aday, kapalı baz olarak Claude Opus 4.8, donanım uyumu ve düzenlenebilir yatırım varsayımları."}
+      </p>
+    </div>
+
+    <div class="evidence-rail" role="note">
+      <ShieldAlert size={22} stroke-width={1.6} aria-hidden="true" />
+      <p>
+        <strong>{en ? "Dataset date: 22 July 2026." : "Veri seti tarihi: 22 Temmuz 2026."}</strong>{" "}
+        {en
+          ? "Most benchmark scores are producer-reported and may vary by model revision, harness and inference effort. A blank cell means unpublished or non-comparable—not zero."
+          : "Benchmark skorlarının çoğu üretici beyanıdır; model sürümü, test düzeneği ve çıkarım eforuna göre değişebilir. Boş hücre sıfır değil, yayımlanmamış veya karşılaştırılamaz veri demektir."}
+      </p>
+    </div>
+
+    <div class="table-shell" data-allow-overflow tabindex="0" aria-label={en ? "Scrollable frontier model comparison" : "Kaydırılabilir öncü model karşılaştırması"}>
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th scope="col">{en ? "Model" : "Model"}</th>
+            <th scope="col">{en ? "Release / status" : "Çıkış / durum"}</th>
+            <th scope="col">{en ? "Total / active" : "Toplam / aktif"}</th>
+            <th scope="col">{en ? "Architecture" : "Mimari"}</th>
+            <th scope="col">{en ? "Context" : "Bağlam"}</th>
+            <th scope="col">{en ? "Modality" : "Kip"}</th>
+            <th scope="col">{en ? "License" : "Lisans"}</th>
+            {benchmarkKeys.map((key) => <th scope="col">{benchmarkLabels[key]}</th>)}
+            <th scope="col">{en ? "Compared with Opus 4.8" : "Opus 4.8'e göre"}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {frontierModels.map((model) => (
+            <tr class:list={[`status-${model.status}`]}>
+              <th scope="row"><strong>{model.name}</strong><small>{model.maker}</small></th>
+              <td><strong>{local(model.release)}</strong><small>{local(model.availability)}</small></td>
+              <td>{model.totalParameters} / {model.activeParameters}</td>
+              <td>{model.architecture}</td>
+              <td>{model.context}</td>
+              <td>{local(model.multimodal)}</td>
+              <td>{local(model.license)}</td>
+              {benchmarkKeys.map((key) => <td class="numeric">{model.benchmarks[key] ?? "—"}</td>)}
+              <td class="comparison">{local(model.comparison)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict-grid">
+      {sourceVerdicts[lang].map(([title, description]) => (
+        <article><span>{title}</span><p>{description}</p></article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="frontier-section frontier-section--tint" aria-labelledby="opus-gap-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="section-index">07 / {en ? "Opus 4.8 delta" : "Opus 4.8 farkı"}</p>
+        <h2 id="opus-gap-title">{en ? "Where open candidates lead—and where evidence is missing" : "Açık adaylar nerede önde, kanıt nerede eksik"}</h2>
+      </div>
+      <p>{en ? "Each visible value is the open model score minus the Opus 4.8 baseline. Positive is ahead; negative is behind." : "Görünen her değer açık model skorundan Opus 4.8 bazının çıkarılmasıdır. Pozitif önde, negatif geridedir."}</p>
+    </div>
+
+    <div class="table-shell" data-allow-overflow tabindex="0" aria-label={en ? "Scrollable benchmark delta table" : "Kaydırılabilir benchmark fark tablosu"}>
+      <table class="delta-table">
+        <thead>
+          <tr><th scope="col">{en ? "Open model" : "Açık model"}</th>{benchmarkKeys.map((key) => <th scope="col">{benchmarkLabels[key]}</th>)}</tr>
+        </thead>
+        <tbody>
+          {openModels.map((model) => (
+            <tr>
+              <th scope="row">{model.name}</th>
+              {benchmarkKeys.map((key) => {
+                const value = delta(model, key);
+                return <td class:list={[{ positive: value !== null && value >= 0, negative: value !== null && value < 0 }]}>{value === null ? "—" : `${value >= 0 ? "+" : ""}${formatNumber(value)}`}</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="matrix-note">
+      {en
+        ? "Interpretation from the supplied workbook: GPQA-D and SWE-bench Verified are nearing saturation. The more discriminating fields are SWE-bench Pro, Terminal-Bench 2.1 and the AA Intelligence Index. Kimi K3 and GLM-5.2 exceed the baseline on Terminal-Bench; Kimi K3 is approximately level on AA Index."
+        : "Sağlanan çalışma kitabının yorumu: GPQA-D ve SWE-bench Verified doygunluğa yaklaşıyor. Daha ayırt edici alanlar SWE-bench Pro, Terminal-Bench 2.1 ve AA Zekâ İndeksi. Kimi K3 ve GLM-5.2 Terminal-Bench'te baz skoru geçiyor; Kimi K3 AA İndeksi'nde yaklaşık eşit."}
+    </p>
+  </div>
+</section>
+
+<section class="frontier-section" aria-labelledby="hardware-fit-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="section-index">08 / {en ? "Memory and GPU economics" : "Bellek ve GPU ekonomisi"}</p>
+        <h2 id="hardware-fit-title">{en ? "Fit the model before pricing the system" : "Sistemi fiyatlamadan önce modeli sığdır"}</h2>
+      </div>
+      <p>{en ? "For MoE serving, all experts must remain resident in accelerator memory. Active parameters influence speed; total parameters drive the weight-memory floor." : "MoE sunumunda tüm uzmanlar hızlandırıcı belleğinde kalmalıdır. Aktif parametreler hızı, toplam parametreler ağırlık belleği tabanını belirler."}</p>
+    </div>
+
+    <div class="fit-board" data-fit-calculator data-locale={locale}>
+      <div class="fit-inputs">
+        <div class="board-title"><DatabaseZap size={25} stroke-width={1.6} aria-hidden="true" /><div><span>{en ? "FP8 + KV planning check" : "FP8 + KV planlama kontrolü"}</span><h3>{en ? "Model-to-GPU memory fit" : "Model–GPU bellek uyumu"}</h3></div></div>
+        <label>{en ? "Model" : "Model"}<select data-fit-model>
+          {openModels.filter((model) => model.recommendedVramGb !== null).map((model) => <option value={model.recommendedVramGb} selected={model.name === "GLM-5.2"}>{model.name} · ~{formatInteger(model.recommendedVramGb!)} GB</option>)}
+        </select></label>
+        <label>{en ? "Accelerator" : "Hızlandırıcı"}<select data-fit-gpu>
+          {gpuOptions.filter((gpu) => gpu.vendor !== "rack").map((gpu) => <option value={gpu.vramGb} selected={gpu.id === "h200"}>{gpu.name} · {formatInteger(gpu.vramGb)} GB</option>)}
+        </select></label>
+        <label>{en ? "Accelerator count" : "Hızlandırıcı adedi"}<input data-fit-count type="number" min="1" max="128" step="1" value="8" inputmode="numeric" /></label>
+      </div>
+      <div class="fit-results" aria-live="polite">
+        <div><span>{en ? "Required planning VRAM" : "Gerekli planlama VRAM'i"}</span><strong data-fit-result="required">~1,050 GB</strong></div>
+        <div><span>{en ? "Installed VRAM" : "Kurulu VRAM"}</span><strong data-fit-result="installed">1,128 GB</strong></div>
+        <div class="fit-status is-fit"><span>{en ? "Memory check" : "Bellek kontrolü"}</span><strong data-fit-result="status">{en ? "FITS — 78 GB headroom" : "SIĞIYOR — 78 GB pay"}</strong></div>
+        <p>{en ? "The workbook uses planning envelopes, not engine-specific measurements. Long context or high concurrency can require 1.5–2× memory; benchmark the exact serving stack." : "Çalışma kitabı motor-özel ölçüm değil planlama zarfı kullanır. Uzun bağlam veya yüksek eşzamanlılık 1,5–2× bellek gerektirebilir; gerçek servis yığınını ölçün."}</p>
+      </div>
+    </div>
+
+    <div class="table-shell table-shell--hardware" data-allow-overflow tabindex="0" aria-label={en ? "Scrollable model hardware recommendations" : "Kaydırılabilir model donanım önerileri"}>
+      <table class="hardware-table">
+        <thead><tr><th scope="col">{en ? "Model" : "Model"}</th><th scope="col">{en ? "FP8 weights" : "FP8 ağırlık"}</th><th scope="col">{en ? "Recommended VRAM" : "Önerilen VRAM"}</th><th scope="col">{en ? "Class" : "Sınıf"}</th><th scope="col">NVIDIA</th><th scope="col">AMD</th><th scope="col">{en ? "Quantized option" : "Nicemlenmiş seçenek"}</th></tr></thead>
+        <tbody>
+          {openModels.filter((model) => model.weightGb !== null).map((model) => (
+            <tr><th scope="row">{model.name}</th><td class="numeric">~{formatInteger(model.weightGb!)} GB</td><td class="numeric">~{formatInteger(model.recommendedVramGb!)} GB</td><td>{local(model.hardwareClass)}</td><td>{local(model.nvidia)}</td><td>{local(model.amd)}</td><td>{local(model.quantized)}</td></tr>
+          ))}
+          {hardwareExtras.map((model) => (
+            <tr><th scope="row">{model.name} <small>{en ? "hardware bonus row" : "donanım bonus satırı"}</small></th><td class="numeric">~{formatInteger(model.weightGb)} GB</td><td class="numeric">~{formatInteger(model.recommendedVramGb)} GB</td><td>{local(model.hardwareClass)}</td><td>{local(model.nvidia)}</td><td>{local(model.amd)}</td><td>{local(model.quantized)}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <details class="data-details">
+      <summary><Cpu size={20} aria-hidden="true" />{en ? "Open GPU technical and unit-price table" : "GPU teknik özellik ve birim fiyat tablosunu aç"}</summary>
+      <p>{en ? "Purchase and cloud prices are editable-source midpoints, expected to move ±20%, and exclude tax, installation and facility work. Dense FP8/FP4 figures vary by source." : "Alım ve bulut fiyatları düzenlenebilir kaynak orta tahminidir; ±%20 oynayabilir ve vergi, kurulum, tesis işlerini içermez. Yoğun FP8/FP4 değerleri kaynağa göre değişir."}</p>
+      <div class="table-shell" data-allow-overflow tabindex="0">
+        <table class="gpu-table">
+          <thead><tr><th scope="col">GPU</th><th scope="col">{en ? "Architecture" : "Mimari"}</th><th scope="col">VRAM</th><th scope="col">{en ? "Bandwidth" : "Bant genişliği"}</th><th scope="col">TDP</th><th scope="col">FP8 / FP4</th><th scope="col">{en ? "Purchase" : "Alım"}</th><th scope="col">$/GB</th><th scope="col">{en ? "Cloud / hour" : "Bulut / saat"}</th><th scope="col">$/GB·{en ? "month" : "ay"}</th><th scope="col">{en ? "Note" : "Not"}</th></tr></thead>
+          <tbody>
+            {gpuOptions.map((gpu) => (
+              <tr><th scope="row">{gpu.name}</th><td>{gpu.architecture}</td><td class="numeric">{formatInteger(gpu.vramGb)} GB</td><td class="numeric">{gpu.bandwidthTb === null ? "—" : `${formatNumber(gpu.bandwidthTb)} TB/s`}</td><td class="numeric">{formatInteger(gpu.tdpW)} W</td><td class="numeric">{formatNumber(gpu.fp8, 2)} / {gpu.fp4 === null ? "—" : formatNumber(gpu.fp4, 1)}</td><td class="numeric">{formatUsd(gpu.purchaseUsd)}</td><td class="numeric">{formatUsd(gpu.purchaseUsd / gpu.vramGb)}</td><td class="numeric">{gpu.cloudHourlyUsd === null ? en ? "rack bulk" : "rack toplu" : formatUsd(gpu.cloudHourlyUsd)}</td><td class="numeric">{gpu.cloudHourlyUsd === null ? "~$5–6" : formatUsd((gpu.cloudHourlyUsd * 730) / gpu.vramGb)}</td><td>{local(gpu.note)}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="frontier-section frontier-section--investment" aria-labelledby="investment-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="section-index">09 / {en ? "Investment calculator" : "Yatırım hesaplayıcısı"}</p>
+        <h2 id="investment-title">{en ? "Make the Kimi K3 ownership trade-off visible" : "Kimi K3 sahiplik dengesini görünür kıl"}</h2>
+      </div>
+      <p>{en ? "This calculator preserves the workbook formula: annual electricity = kW × hours × $/kWh; payback months = CapEx ÷ (monthly cloud rent − monthly electricity)." : "Bu hesaplayıcı çalışma kitabındaki formülü korur: yıllık elektrik = kW × saat × $/kWh; geri dönüş ayı = CapEx ÷ (aylık bulut kirası − aylık elektrik)."}</p>
+    </div>
+
+    <div class="investment-board" data-investment-calculator data-locale={locale}>
+      <form class="investment-inputs">
+        <div class="board-title"><Calculator size={27} stroke-width={1.6} aria-hidden="true" /><div><span>{en ? "Editable workbook assumptions" : "Düzenlenebilir çalışma kitabı varsayımları"}</span><h3>{en ? "Buy versus cloud planning model" : "Satın alma–bulut planlama modeli"}</h3></div></div>
+        <label>{en ? "Infrastructure preset" : "Altyapı preseti"}<select data-investment-field="configuration">
+          {investmentConfigurations.map((item) => <option value={item.id}>{item.vendor} · {item.name}</option>)}
+        </select></label>
+        <div class="input-pair">
+          <label>{en ? "Electricity ($/kWh)" : "Elektrik ($/kWh)"}<input data-investment-field="electricity" type="number" min="0" max="2" step="0.01" value="0.12" inputmode="decimal" /></label>
+          <label>{en ? "Operating hours / year" : "Çalışma saati / yıl"}<input data-investment-field="hours" type="number" min="1" max="8760" step="1" value="8760" inputmode="numeric" /></label>
+        </div>
+        <div class="preset-facts">
+          <div><span>{en ? "Accelerators" : "Hızlandırıcılar"}</span><strong data-investment-result="gpu">{initialInvestment.gpu}</strong></div>
+          <div><span>{en ? "Usable VRAM" : "Kullanılabilir VRAM"}</span><strong data-investment-result="vram">{formatNumber(initialInvestment.vramTb)} TB</strong></div>
+          <div><span>{en ? "Power" : "Güç"}</span><strong data-investment-result="power">{initialInvestment.powerKw} kW</strong></div>
+        </div>
+      </form>
+      <div class="investment-results" aria-live="polite">
+        <div><Scale size={19} aria-hidden="true" /><span>{en ? "Estimated CapEx" : "Tahmini CapEx"}</span><strong data-investment-result="capex">{formatUsd(initialInvestment.capexUsd)}</strong></div>
+        <div><Gauge size={19} aria-hidden="true" /><span>{en ? "Annual electricity" : "Yıllık elektrik"}</span><strong data-investment-result="annual-electricity">{formatUsd(initialElectricity)}</strong></div>
+        <div><Server size={19} aria-hidden="true" /><span>{en ? "Cloud reference / month" : "Bulut referansı / ay"}</span><strong data-investment-result="cloud">{formatUsd(initialInvestment.cloudMonthlyUsd)}</strong></div>
+        <div><span>{en ? "Net avoided cloud cost / month" : "Net kaçınılan bulut maliyeti / ay"}</span><strong data-investment-result="net-monthly">{formatUsd(initialInvestment.cloudMonthlyUsd - initialElectricity / 12)}</strong></div>
+        <div class="result-major"><span>{en ? "Modeled payback" : "Modellenen geri dönüş"}</span><strong><b data-investment-result="payback">{formatNumber(initialPayback)}</b> {en ? "months" : "ay"}</strong></div>
+        <p data-investment-result="note">{local(initialInvestment.note)}</p>
+      </div>
+    </div>
+
+    <div class="investment-caveat">
+      <ShieldAlert size={22} stroke-width={1.6} aria-hidden="true" />
+      <p>{en ? "Planning estimate—not investment advice or a supplier quote. CapEx, power and rent are workbook assumptions. Facility construction, cooling upgrades, networking, storage, financing, staffing, tax, customs, utilization, support and residual value are not fully modeled. If monthly rent does not exceed monthly electricity, payback is not meaningful." : "Planlama tahminidir; yatırım tavsiyesi veya tedarikçi teklifi değildir. CapEx, güç ve kira çalışma kitabı varsayımlarıdır. Tesis inşası, soğutma yükseltmesi, ağ, depolama, finansman, personel, vergi, gümrük, kullanım oranı, destek ve kalıntı değer tam modellenmemiştir. Aylık kira aylık elektrik giderini aşmıyorsa geri dönüş hesabı anlamlı değildir."}</p>
+    </div>
+
+    <details class="data-details data-details--sources">
+      <summary><ShieldAlert size={20} aria-hidden="true" />{en ? "Method, scope and source notes" : "Yöntem, kapsam ve kaynak notları"}</summary>
+      <div class="source-notes">
+        <p><strong>{en ? "Scope." : "Kapsam."}</strong> {en ? "Twelve companies’ most advanced supplied open-weight candidate plus Claude Opus 4.8 as a closed baseline. Baidu ERNIE 5.x is excluded because the supplied workbook classifies it as hosted-only." : "On iki firmanın sağlanan en gelişmiş açık-ağırlık adayı ve kapalı baz olarak Claude Opus 4.8. Sağlanan çalışma kitabı Baidu ERNIE 5.x'i yalnız hosted olarak sınıfladığı için kapsam dışında bırakır."}</p>
+        <p><strong>{en ? "Memory method." : "Bellek yöntemi."}</strong> {en ? "FP8 weight memory is approximated as one byte per parameter; 4-bit is roughly half. KV cache and runtime buffers are additional. MoE active parameter count affects speed, not the need to keep all expert weights resident." : "FP8 ağırlık belleği parametre başına yaklaşık bir bayt, 4-bit yaklaşık yarısı olarak alınır. KV cache ve çalışma tamponları ek yük oluşturur. MoE aktif parametre sayısı hızı etkiler; tüm uzman ağırlıklarını bellekte tutma ihtiyacını kaldırmaz."}</p>
+        <p><strong>{en ? "Compiled references in the workbook." : "Çalışma kitabındaki derleme kaynakları."}</strong> Artificial Analysis · VentureBeat · Tom's Hardware · TechCrunch · MarkTechPost · Sebastian Raschka · OpenRouter · morphllm/vellum · Hugging Face model cards · producer blogs.</p>
+        <p><strong>{en ? "Additional Opus baseline fields." : "Ek Opus baz alanları."}</strong> MCP benchmark 82.2 · OSWorld 83.4 · GDPval-AA 1890 Elo · {en ? "context" : "bağlam"} 200K. {en ? "These workbook fields are retained as source notes because the open-model matrix does not provide comparable values. The workbook's original MCP benchmark label is generalized to satisfy the public-site privacy gate." : "Açık model matrisi karşılaştırılabilir değer sunmadığı için bu çalışma kitabı alanları kaynak notu olarak korunur. Çalışma kitabındaki özgün MCP benchmark etiketi, kamu sitesi gizlilik kapısını karşılamak için genelleştirilmiştir."}</p>
+        <p><strong>{en ? "Decision rule." : "Karar kuralı."}</strong> {en ? "Validate model availability, license, checksums, benchmark harness, exact workload quality, serving throughput, prices, taxes and compliance before procurement or release." : "Tedarik veya sürümden önce model bulunabilirliğini, lisansı, sağlama toplamlarını, benchmark düzeneğini, gerçek iş yükü kalitesini, servis throughput'unu, fiyatları, vergileri ve mevzuatı doğrulayın."}</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<script is:inline define:vars={{ investmentConfigurations }}>
+  const money = (locale, value) => new Intl.NumberFormat(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+  const number = (locale, value, digits = 1) => new Intl.NumberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
+
+  document.querySelectorAll("[data-fit-calculator]").forEach((calculator) => {
+    const locale = calculator.dataset.locale || "en-US";
+    const model = calculator.querySelector("[data-fit-model]");
+    const gpu = calculator.querySelector("[data-fit-gpu]");
+    const count = calculator.querySelector("[data-fit-count]");
+    const result = (name) => calculator.querySelector(`[data-fit-result="${name}"]`);
+    const update = () => {
+      const required = Number(model.value);
+      const installed = Number(gpu.value) * Math.max(1, Number(count.value));
+      const headroom = installed - required;
+      result("required").textContent = `~${number(locale, required, 0)} GB`;
+      result("installed").textContent = `${number(locale, installed, 0)} GB`;
+      result("status").textContent = headroom >= 0
+        ? `${locale === "tr-TR" ? "SIĞIYOR" : "FITS"} — ${number(locale, headroom, 0)} GB ${locale === "tr-TR" ? "pay" : "headroom"}`
+        : `${locale === "tr-TR" ? "SIĞMIYOR" : "DOES NOT FIT"} — ${number(locale, Math.abs(headroom), 0)} GB ${locale === "tr-TR" ? "eksik" : "short"}`;
+      result("status").parentElement.classList.toggle("is-fit", headroom >= 0);
+      result("status").parentElement.classList.toggle("is-miss", headroom < 0);
+    };
+    calculator.querySelectorAll("input, select").forEach((input) => input.addEventListener("input", update));
+    update();
+  });
+
+  document.querySelectorAll("[data-investment-calculator]").forEach((calculator) => {
+    const locale = calculator.dataset.locale || "en-US";
+    const field = (name) => calculator.querySelector(`[data-investment-field="${name}"]`);
+    const result = (name) => calculator.querySelector(`[data-investment-result="${name}"]`);
+    const update = () => {
+      const config = investmentConfigurations.find((item) => item.id === field("configuration").value) || investmentConfigurations[0];
+      const electricityRate = Math.max(0, Number(field("electricity").value));
+      const hours = Math.max(1, Number(field("hours").value));
+      const annualElectricity = config.powerKw * hours * electricityRate;
+      const netMonthly = config.cloudMonthlyUsd - annualElectricity / 12;
+      const payback = netMonthly > 0 ? config.capexUsd / netMonthly : null;
+      result("gpu").textContent = config.gpu;
+      result("vram").textContent = `${number(locale, config.vramTb)} TB`;
+      result("power").textContent = `${number(locale, config.powerKw, 0)} kW`;
+      result("capex").textContent = money(locale, config.capexUsd);
+      result("annual-electricity").textContent = money(locale, annualElectricity);
+      result("cloud").textContent = money(locale, config.cloudMonthlyUsd);
+      result("net-monthly").textContent = money(locale, netMonthly);
+      result("payback").textContent = payback === null ? "—" : number(locale, payback);
+      result("note").textContent = config.note[locale === "tr-TR" ? "tr" : "en"];
+    };
+    calculator.querySelectorAll("input, select").forEach((input) => input.addEventListener("input", update));
+    update();
+  });
+</script>
+
+<style>
+  .frontier-section {
+    padding-block: clamp(76px, 9vw, 118px);
+  }
+
+  .frontier-section--matrix,
+  .frontier-section--investment {
+    border-top: 1px solid var(--line);
+  }
+
+  .frontier-section--tint {
+    border-block: 1px solid var(--line);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 5%, transparent), transparent 42%), var(--surface-muted);
+  }
+
+  .frontier-section--investment {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--cyan) 6%, transparent), transparent 48%);
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.7fr);
+    align-items: end;
+    gap: 48px;
+    margin-bottom: 42px;
+  }
+
+  .section-index {
+    margin: 0 0 13px;
+    color: var(--cyan);
+    font-size: 0.68rem;
+    font-weight: 820;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-head h2 {
+    max-width: 860px;
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(2.1rem, 4vw, 3.65rem);
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .section-head > p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .evidence-rail,
+  .investment-caveat {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding: 18px 20px;
+    border: 1px solid color-mix(in srgb, var(--amber) 48%, var(--line));
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--amber) 7%, var(--bg-elevated));
+    color: var(--text-muted);
+  }
+
+  .evidence-rail svg,
+  .investment-caveat svg {
+    color: var(--amber);
+  }
+
+  .evidence-rail p,
+  .investment-caveat p {
+    margin: 0;
+    font-size: 0.83rem;
+    line-height: 1.55;
+  }
+
+  .evidence-rail strong {
+    color: var(--text);
+  }
+
+  .table-shell {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--bg-elevated);
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.08);
+    overscroll-behavior-inline: contain;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text);
+    font-size: 0.76rem;
+  }
+
+  .matrix-table {
+    min-width: 1750px;
+  }
+
+  .delta-table {
+    min-width: 900px;
+  }
+
+  .hardware-table,
+  .gpu-table {
+    min-width: 1280px;
+  }
+
+  th,
+  td {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    background: color-mix(in srgb, var(--surface-muted) 90%, var(--bg));
+    color: var(--text);
+    font-size: 0.66rem;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+  }
+
+  tbody th {
+    min-width: 150px;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover {
+    background: color-mix(in srgb, var(--cyan) 4%, transparent);
+  }
+
+  td small,
+  th small {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .numeric {
+    white-space: nowrap;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .comparison {
+    min-width: 260px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .status-base {
+    background: color-mix(in srgb, var(--violet) 10%, transparent);
+  }
+
+  .status-pending {
+    background: color-mix(in srgb, var(--amber) 8%, transparent);
+  }
+
+  .status-restricted {
+    background: color-mix(in srgb, #e05b67 7%, transparent);
+  }
+
+  .verdict-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .verdict-grid article {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--bg-elevated);
+  }
+
+  .verdict-grid span {
+    color: var(--cyan);
+    font-size: 0.66rem;
+    font-weight: 820;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .verdict-grid p {
+    margin: 7px 0 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .delta-table th:not(:first-child),
+  .delta-table td {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .delta-table td.positive {
+    background: color-mix(in srgb, #39bd78 20%, transparent);
+    color: var(--text);
+    font-weight: 800;
+  }
+
+  .delta-table td.negative {
+    background: color-mix(in srgb, #e05b67 17%, transparent);
+    color: var(--text);
+    font-weight: 800;
+  }
+
+  .matrix-note {
+    margin: 18px 0 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+
+  .fit-board,
+  .investment-board {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+    overflow: hidden;
+    margin-bottom: 18px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--bg-elevated);
+    box-shadow: var(--shadow);
+  }
+
+  .fit-inputs,
+  .investment-inputs {
+    display: grid;
+    gap: 17px;
+    padding: 26px;
+    border-right: 1px solid var(--line);
+  }
+
+  .board-title {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 4px;
+  }
+
+  .board-title svg {
+    color: var(--cyan);
+  }
+
+  .board-title span {
+    color: var(--cyan);
+    font-size: 0.64rem;
+    font-weight: 820;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .board-title h3 {
+    margin: 3px 0 0;
+    color: var(--text);
+    font-size: 1.12rem;
+  }
+
+  .fit-inputs label,
+  .investment-inputs label {
+    display: grid;
+    gap: 7px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 720;
+  }
+
+  input,
+  select {
+    width: 100%;
+    min-width: 0;
+    min-height: 45px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+  }
+
+  .fit-results,
+  .investment-results {
+    display: grid;
+    align-content: center;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+  }
+
+  .fit-results > div,
+  .investment-results > div {
+    display: flex;
+    min-width: 0;
+    padding: 24px;
+    background: var(--surface);
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .fit-results span,
+  .investment-results span,
+  .preset-facts span {
+    color: var(--text-muted);
+    font-size: 0.67rem;
+    line-height: 1.35;
+  }
+
+  .fit-results strong,
+  .investment-results strong {
+    margin-top: 8px;
+    color: var(--text);
+    font-size: clamp(1.1rem, 2.2vw, 1.75rem);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  .fit-results p,
+  .investment-results > p {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 19px 22px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    line-height: 1.5;
+  }
+
+  .fit-status.is-fit {
+    background: color-mix(in srgb, #39bd78 11%, var(--surface));
+  }
+
+  .fit-status.is-miss {
+    background: color-mix(in srgb, #e05b67 11%, var(--surface));
+  }
+
+  .table-shell--hardware {
+    margin-top: 18px;
+  }
+
+  .data-details {
+    margin-top: 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--bg-elevated);
+  }
+
+  .data-details summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px;
+    color: var(--text);
+    font-size: 0.84rem;
+    font-weight: 780;
+    cursor: pointer;
+  }
+
+  .data-details summary svg {
+    color: var(--cyan);
+  }
+
+  .data-details > p {
+    margin: 0;
+    padding: 0 20px 18px;
+    color: var(--text-muted);
+    font-size: 0.77rem;
+  }
+
+  .data-details .table-shell {
+    margin: 0 14px 14px;
+    border-radius: 13px;
+    box-shadow: none;
+  }
+
+  .input-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .preset-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .preset-facts > div {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-muted);
+  }
+
+  .preset-facts strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--text);
+    font-size: 0.76rem;
+    overflow-wrap: anywhere;
+  }
+
+  .investment-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .investment-results svg {
+    color: var(--cyan);
+  }
+
+  .investment-results .result-major {
+    grid-column: 1 / -1;
+    background: color-mix(in srgb, var(--cyan) 10%, var(--surface));
+  }
+
+  .investment-results .result-major strong {
+    color: var(--cyan);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+  }
+
+  .investment-results .result-major b {
+    font: inherit;
+  }
+
+  .investment-caveat {
+    margin-top: 18px;
+    margin-bottom: 0;
+  }
+
+  .data-details--sources {
+    margin-top: 18px;
+  }
+
+  .source-notes {
+    display: grid;
+    gap: 0;
+    padding: 0 20px 20px;
+  }
+
+  .source-notes p {
+    margin: 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--line);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  .source-notes strong {
+    color: var(--text);
+  }
+
+  @media (max-width: 980px) {
+    .verdict-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fit-board,
+    .investment-board {
+      grid-template-columns: 1fr;
+    }
+
+    .fit-inputs,
+    .investment-inputs {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .section-head,
+    .verdict-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-head {
+      align-items: start;
+      gap: 18px;
+    }
+
+    .fit-results,
+    .investment-results,
+    .preset-facts,
+    .input-pair {
+      grid-template-columns: 1fr;
+    }
+
+    .fit-results p,
+    .investment-results > p,
+    .investment-results .result-major {
+      grid-column: auto;
+    }
+
+    .evidence-rail,
+    .investment-caveat {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
